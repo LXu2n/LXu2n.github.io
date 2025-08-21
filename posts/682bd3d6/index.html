@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>内网-单域搭建 | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="单域搭建第一步：更改用户名关闭防火墙（方便实验）第二步：配置静态ip地址和DNS我用了三台虚拟机，分别设置 DC机  web机  pc机  第三步：DC安装域控  在这两个位置能够安装（按顺序来），因为我是安装过的，所以就不展示安装过程了  添加域名 第四步：域内添加用户 然后修改主机名称加入域 web机和pc机加入就行  然后我们尝试使用 CobaltStrike4.7生成木马来连接主机   连">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内网-单域搭建">
+<meta property="og:url" content="https://lxu2n.github.io/posts/682bd3d6/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="单域搭建第一步：更改用户名关闭防火墙（方便实验）第二步：配置静态ip地址和DNS我用了三台虚拟机，分别设置 DC机  web机  pc机  第三步：DC安装域控  在这两个位置能够安装（按顺序来），因为我是安装过的，所以就不展示安装过程了  添加域名 第四步：域内添加用户 然后修改主机名称加入域 web机和pc机加入就行  然后我们尝试使用 CobaltStrike4.7生成木马来连接主机   连">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2025-07-08T11:12:52.000Z">
+<meta property="article:modified_time" content="2025-07-08T11:41:28.508Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "内网-单域搭建",
+  "url": "https://lxu2n.github.io/posts/682bd3d6/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2025-07-08T11:12:52.000Z",
+  "dateModified": "2025-07-08T11:41:28.508Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/682bd3d6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '内网-单域搭建',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.github.io/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/gallery"><i class="fa-fw fas fa-solid fa-image"></i><span> 相册</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">内网-单域搭建</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/gallery"><i class="fa-fw fas fa-solid fa-image"></i><span> 相册</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">内网-单域搭建</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-08T11:12:52.000Z" title="发表于 2025-07-08 19:12:52">2025-07-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-08T11:41:28.508Z" title="更新于 2025-07-08 19:41:28">2025-07-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="单域搭建"><a href="#单域搭建" class="headerlink" title="单域搭建"></a>单域搭建</h1><h2 id="第一步：更改用户名关闭防火墙（方便实验）"><a href="#第一步：更改用户名关闭防火墙（方便实验）" class="headerlink" title="第一步：更改用户名关闭防火墙（方便实验）"></a>第一步：更改用户名关闭防火墙（方便实验）</h2><h2 id="第二步：配置静态ip地址和DNS"><a href="#第二步：配置静态ip地址和DNS" class="headerlink" title="第二步：配置静态ip地址和DNS"></a>第二步：配置静态ip地址和DNS</h2><p>我用了三台虚拟机，分别设置</p>
+<p>DC机</p>
+<p><img src="/posts/682bd3d6/1751971702475-066e7f00-e28d-4230-8e03-57dc08a9ab17-1751974812632-60.png" alt="img"></p>
+<p>web机</p>
+<p><img src="/posts/682bd3d6/1751971840887-f8b180fe-df03-45e8-bec0-89622b2425b5-1751974812632-64.png" alt="img"></p>
+<p>pc机</p>
+<p><img src="/posts/682bd3d6/1751958219535-5b31d3e5-c5c2-4cca-879b-d5cfa6be2498-1751974812632-62.png" alt="img"></p>
+<h2 id="第三步：DC安装域控"><a href="#第三步：DC安装域控" class="headerlink" title="第三步：DC安装域控"></a>第三步：DC安装域控</h2><p><img src="/posts/682bd3d6/1751972165953-dba97d93-cfb0-4069-90bc-f0fb8bd21b4e-1751974781099-36.png" alt="img"></p>
+<p><img src="/posts/682bd3d6/1751972159172-874ca244-f65b-42ff-a42c-8509e17f34e3-1751974781099-38.png" alt="img"></p>
+<p>在这两个位置能够安装（按顺序来），因为我是安装过的，所以就不展示安装过程了</p>
+<p><img src="/posts/682bd3d6/1751971946598-7f08e77c-0e6f-4212-a8d2-a22430958673-1751974781099-40.png" alt="img"></p>
+<p>添加域名</p>
+<h2 id="第四步：域内添加用户"><a href="#第四步：域内添加用户" class="headerlink" title="第四步：域内添加用户"></a>第四步：域内添加用户</h2><p><img src="/posts/682bd3d6/1751972239731-dff68c0c-4a6f-49f1-a5d0-92f2acaaf065-1751974781099-42.png" alt="img"></p>
+<p>然后修改主机名称加入域</p>
+<p>web机和pc机加入就行</p>
+<p><img src="/posts/682bd3d6/1751972491615-3dadbb3f-1143-4317-9cd2-7e8a79ca4bc3-1751974781099-50.png" alt="img"></p>
+<p>然后我们尝试使用 CobaltStrike4.7生成木马来连接主机</p>
+<p><img src="/posts/682bd3d6/1751972759965-74cf9a02-8ffc-43b0-8bef-8e7467579f2a-1751974781099-44.png" alt="img"></p>
+<p><img src="/posts/682bd3d6/1751973016882-7494fcac-e1d5-47b4-8b36-c9172210d532-1751974781099-46.png" alt="img"></p>
+<p>连接后生成一个木马，让web机或者pc机运行木马即可</p>
+<p><img src="/posts/682bd3d6/1751972983540-aae22c54-84f3-4e71-a634-80f1a5a5b003-1751974781099-48.png" alt="img"></p>
+<p>连接成功并执行命令</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/682bd3d6/">https://lxu2n.github.io/posts/682bd3d6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/3478ea8e/" title="训练赛"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">训练赛</div></div><div class="info-2"><div class="info-item-1">webezpython 从这边可以看到是python的原型链污染 可以直接污染掉对黑名单 1{"__globals__": {"param_black_list1": ["123"]}}  然后打ssti即可  得到flag 压压压 第一个点是&lt;=7.4.21的php -S开启的服务它有⼀个信息泄露的漏洞   https://www.cnblogs.com/Kawakaze777/p/17799235.html  空格是必要的，读出源码，开始审计 123456789&lt;?phperror_reporting(0);$finfo = finfo_open(FILEINFO_MIME_TYPE);if (finfo_file($finfo, $_FILES["file"]["tmp_name"]) === 'application/zip') //判断MIME是否为application/zip{...</div></div></div></a><a class="pagination-related" href="/posts/1d4bd7ca/" title="CVE-2022-0824"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">CVE-2022-0824</div></div><div class="info-2"><div class="info-item-1">webmin远程代码执行webmin是功能最强大的基于web的unix系统管理工具 漏洞影响版本： &lt;1.990  poc: https://github.com/faisalfs10x/Webmin-CVE-2022-0824-revshell  弹到shell  这里要用python开一个web协议 </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%95%E5%9F%9F%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">单域搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E6%9B%B4%E6%94%B9%E7%94%A8%E6%88%B7%E5%90%8D%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99%EF%BC%88%E6%96%B9%E4%BE%BF%E5%AE%9E%E9%AA%8C%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">第一步：更改用户名关闭防火墙（方便实验）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E9%85%8D%E7%BD%AE%E9%9D%99%E6%80%81ip%E5%9C%B0%E5%9D%80%E5%92%8CDNS"><span class="toc-number">1.2.</span> <span class="toc-text">第二步：配置静态ip地址和DNS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9ADC%E5%AE%89%E8%A3%85%E5%9F%9F%E6%8E%A7"><span class="toc-number">1.3.</span> <span class="toc-text">第三步：DC安装域控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%9F%9F%E5%86%85%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7"><span class="toc-number">1.4.</span> <span class="toc-text">第四步：域内添加用户</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/28db1d4e/" title="sql-未知列名的注入">sql-未知列名的注入</a><time datetime="2025-08-21T13:30:02.000Z" title="发表于 2025-08-21 21:30:02">2025-08-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/5617cb6f/" title="[CISCN2019_华东南赛区]Web11">[CISCN2019_华东南赛区]Web11</a><time datetime="2025-08-21T06:02:47.000Z" title="发表于 2025-08-21 14:02:47">2025-08-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/3478ea8e/" title="训练赛">训练赛</a><time datetime="2025-07-28T09:05:21.000Z" title="发表于 2025-07-28 17:05:21">2025-07-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/682bd3d6/" title="内网-单域搭建">内网-单域搭建</a><time datetime="2025-07-08T11:12:52.000Z" title="发表于 2025-07-08 19:12:52">2025-07-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/1d4bd7ca/" title="CVE-2022-0824">CVE-2022-0824</a><time datetime="2025-06-30T13:15:05.000Z" title="发表于 2025-06-30 21:15:05">2025-06-30</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
