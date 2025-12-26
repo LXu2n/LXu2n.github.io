@@ -1,0 +1,296 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>RMI_1 | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言今日开始java中RMI的学习先记录一下RMI的坑点：RMI攻击手法只能在jdk8u121之前可以使用，因为在8u121之后bind rebind unbind这三个方法只能对localhost进行攻击 环境准备 jdk8u65  RMI基础RMI介绍RMI (Remote Method Invocation) 模型是一种分布式对象应用，使用 RMI 技术可以使一个 JVM 中的对象，调用另一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RMI_1">
+<meta property="og:url" content="https://lxu2n.github.io/posts/fe391cb8/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="前言今日开始java中RMI的学习先记录一下RMI的坑点：RMI攻击手法只能在jdk8u121之前可以使用，因为在8u121之后bind rebind unbind这三个方法只能对localhost进行攻击 环境准备 jdk8u65  RMI基础RMI介绍RMI (Remote Method Invocation) 模型是一种分布式对象应用，使用 RMI 技术可以使一个 JVM 中的对象，调用另一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2025-12-26T08:57:27.000Z">
+<meta property="article:modified_time" content="2025-12-26T08:58:33.194Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "RMI_1",
+  "url": "https://lxu2n.github.io/posts/fe391cb8/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2025-12-26T08:57:27.000Z",
+  "dateModified": "2025-12-26T08:58:33.194Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/fe391cb8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RMI_1',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.github.io/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">RMI_1</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">RMI_1</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-26T08:57:27.000Z" title="发表于 2025-12-26 16:57:27">2025-12-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-26T08:58:33.194Z" title="更新于 2025-12-26 16:58:33">2025-12-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java%E5%AE%89%E5%85%A8/">Java安全</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java%E5%AE%89%E5%85%A8/RMI/">RMI</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今日开始java中RMI的学习<br>先记录一下RMI的坑点：RMI攻击手法只能在jdk8u121之前可以使用，因为在8u121之后bind rebind unbind这三个方法只能对localhost进行攻击</p>
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
+<li>jdk8u65</li>
+</ul>
+<h1 id="RMI基础"><a href="#RMI基础" class="headerlink" title="RMI基础"></a>RMI基础</h1><h2 id="RMI介绍"><a href="#RMI介绍" class="headerlink" title="RMI介绍"></a>RMI介绍</h2><p><font style="color:rgb(51, 51, 51);">RMI (Remote Method Invocation) 模型是一种分布式对象应用，使用 RMI 技术可以使一个 JVM 中的对象，调用另一个 JVM 中的对象方法并获取调用结果。这里的另一个 JVM 可以在同一台</font><a target="_blank" rel="noopener" href="https://www.w3cschool.cn/article/30445887.html#"><u>计算机</u></a><font style="color:rgb(51, 51, 51);">也可以是远程计算机。因此，RMI 意味着需要一个 Server 端和一个 Client 端。</font></p>
+<p><font style="color:rgb(51, 51, 51);">Server 端通常会创建一个对象，并使之可以被远程访问。</font></p>
+<p><font style="color:rgb(51, 51, 51);">这个对象被称为远程对象。Server 端需要注册这个对象可以被 Client 远程访问。</font></p>
+<p><font style="color:rgb(51, 51, 51);">Client 端调用可以被远程访问的对象上的方法，Client 端就可以和 Server 端进行通信并相互传递信息。</font></p>
+<p><font style="color:rgb(51, 51, 51);">说到这里，是不是发现使用 RMI 在构建一个分布式应用时十分方便，它和 RPC 一样可以实现分布式应用之间的互相通信，甚至和现在的微服务思想都十分类似。</font></p>
+<p><img src="/posts/fe391cb8/1766035501529-9613048b-d624-4e87-a9dd-3f275aa16167.png"></p>
+<p>来解释一下这个图：client，server，registry server将地址和端口注册在registry，client通过获取registry上的目标地址以及端口，对server进行一个远程的调用</p>
+<h2 id="RMI的实现"><a href="#RMI的实现" class="headerlink" title="RMI的实现"></a>RMI的实现</h2><h3 id="server"><a href="#server" class="headerlink" title="server"></a>server</h3><p>先是定义了一个IRemoteOBJ接口，这个接口要求public，并且继承Remote接口</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import java.rmi.Remote;</span><br><span class="line">import java.rmi.RemoteException;</span><br><span class="line"></span><br><span class="line">public interface IRemoteOBJ extends Remote {</span><br><span class="line">    //sayHello就是客户端要调用的方法，需要抛出RemooteException</span><br><span class="line"></span><br><span class="line">    public String sayHello(String keywords) throws RemoteException;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后因为是服务端，被调用的地方这里肯定要写一个实现类RemoteOBJ的</p>
+<p>这里继承的UnicastRemoteObject，用于生成Stub（存根） 	skeleton（骨架）</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import java.rmi.Remote;</span><br><span class="line">import java.rmi.RemoteException;</span><br><span class="line">import java.rmi.server.UnicastRemoteObject;</span><br><span class="line"></span><br><span class="line">public class RemoteOBJ extends UnicastRemoteObject implements IRemoteOBJ {</span><br><span class="line">    public RemoteOBJ() throws RemoteException {</span><br><span class="line">        //UnicastRemoteObject.exportObject(this,0);如果不继承UnicastRemoteObject就需要手动导出</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String sayHello(String keywords) throws RemoteException {</span><br><span class="line">        String upKeywords = keywords.toUpperCase();</span><br><span class="line">        System.out.println(upKeywords);</span><br><span class="line">        return upKeywords;</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>最后是我们需要去注册，方便客户端的使用</p>
+<p>默认端口是1099</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import java.rmi.RemoteException;</span><br><span class="line">import java.rmi.registry.LocateRegistry;</span><br><span class="line">import java.rmi.registry.Registry;</span><br><span class="line"></span><br><span class="line">public class Rmiserver {</span><br><span class="line">    public static void main(String[] args) throws Exception {</span><br><span class="line">        IRemoteOBJ obj = new RemoteOBJ();</span><br><span class="line">        Registry r = LocateRegistry.createRegistry(1099);</span><br><span class="line">        r.bind("rmiserver", obj);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="client"><a href="#client" class="headerlink" title="client"></a>client</h3><p>一样客户端也要写一个接口</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import java.rmi.Remote;</span><br><span class="line">import java.rmi.RemoteException;</span><br><span class="line"></span><br><span class="line">public interface IRemoteOBJ extends Remote {</span><br><span class="line">    //sayHello就是客户端要调用的方法，需要抛出RemooteException</span><br><span class="line"></span><br><span class="line">    public String sayHello(String keywords) throws RemoteException;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后写一个RMIclient，通过这个类来连接服务端，从而进行一个调用</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import java.rmi.NotBoundException;</span><br><span class="line">import java.rmi.RemoteException;</span><br><span class="line">import java.rmi.registry.LocateRegistry;</span><br><span class="line">import java.rmi.registry.Registry;</span><br><span class="line"></span><br><span class="line">public class RMIclient {</span><br><span class="line">    public static void main(String[] args) throws RemoteException, NotBoundException {</span><br><span class="line">        Registry registry = LocateRegistry.getRegistry("127.0.0.1",1099);</span><br><span class="line">        IRemoteOBJ remoteOBJ = (IRemoteOBJ) registry.lookup("rmiserver");</span><br><span class="line">        remoteOBJ.sayHello("hello");</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="/posts/fe391cb8/1766043103717-99980cf5-54d8-428e-be3c-6cbb4f889546.png"></p>
+<p>在服务端这里调用成功，并且得到了HELLO</p>
+<p>其实在这整个过程里面都是通过序列化和反序列化实现的</p>
+<h2 id="从wireshark分析通信原理"><a href="#从wireshark分析通信原理" class="headerlink" title="从wireshark分析通信原理"></a>从wireshark分析通信原理</h2><h3 id="客户端与注册表之间的交互"><a href="#客户端与注册表之间的交互" class="headerlink" title="客户端与注册表之间的交互"></a>客户端与注册表之间的交互</h3><p><img src="/posts/fe391cb8/1766047387367-5da5e9f7-b97a-4db6-9dc5-74de35bf2271.png"></p>
+<p>先是tcp的三次握手</p>
+<p>然后接下来每一个RMI包后会跟一个tcp包，这个tcp包是一个确认包</p>
+<p><img src="/posts/fe391cb8/1766047415444-da2f4a16-7ace-435c-a75f-2efee7459a00.png"></p>
+<p>这里客户端向注册中心询问rmiserver的地址和端口</p>
+<p><img src="/posts/fe391cb8/1766047484783-abb61654-8b6c-450c-a698-73a46ce80559.png"></p>
+<p><img src="/posts/fe391cb8/1766047471097-f3d0b088-e431-4e83-8c51-25e7960eadc9.png"></p>
+<p>这里给予回应，可以看到是明显的序列化</p>
+<p>ac de 00 05 就是序列化的标志</p>
+<h3 id="客户端另起一个端口与服务端的交互"><a href="#客户端另起一个端口与服务端的交互" class="headerlink" title="客户端另起一个端口与服务端的交互"></a>客户端另起一个端口与服务端的交互</h3><p>客户端与服务器进行一个交互，同样是使用序列化进行传输</p>
+<p><img src="/posts/fe391cb8/1766047615918-74abbc68-cb2d-459c-b9de-8008b88c44dc.png"></p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Registry registry = LocateRegistry.getRegistry("127.0.0.1",1099);</span><br><span class="line">IRemoteOBJ remoteOBJ = (IRemoteOBJ) registry.lookup("rmiserver");</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这应该是建立一个远程连接，然后到</p>
+<h3 id="参数的传输"><a href="#参数的传输" class="headerlink" title="参数的传输"></a>参数的传输</h3><p><img src="/posts/fe391cb8/1766047930657-1f5211c0-30c2-4d3f-8f38-da6951c42924.png"></p>
+<p>发送hello</p>
+<p><img src="/posts/fe391cb8/1766047956662-275400a9-6e15-4a65-9d2c-32279fbce4df.png"></p>
+<p>最后调用成功得到HELLO</p>
+<p>其实在整个过程中我们能看到，客户端与服务端发送数据包的内容都是序列化之后的数据流，那么客户端与服务端肯定都有反序列化的功能。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在整个过程中建立了两次tcp的连接，第一次是客户端去连接1099的，第二次是服务端发送给客户端的。<br>第一次连接中，客户端会连接到注册中心，并传入序列化的name也就是要找的rmiserver，然后注册中心反序列化读取这个字节流。<br>第二次连接中，服务端发送给客户端 Call 的消息。客户端反序列化该对象，发现该对象是⼀个远程对象，并得到它的地址，客户端与其进行连接，实现远程调用。<br>其实就是，服务端创建远程对象，bind远程对象到注册中心上时，会给一个name，然后客户端带着name在注册中心上取得这个远程对象，建立连接，从而能够远程调用。</p>
+<h2 id="从代码方面分析通信原理"><a href="#从代码方面分析通信原理" class="headerlink" title="从代码方面分析通信原理"></a>从代码方面分析通信原理</h2><p>注册中心：存储名字和远程对象<br>服务端，客户端和注册中心，三者相互通信，所以一共有6个过程</p>
+<p><img src="/posts/fe391cb8/1766049177536-8b56d229-cf63-4537-ae9e-c5c47ad6e944.png"></p>
+<h3 id="1-创建远程对象"><a href="#1-创建远程对象" class="headerlink" title="1.创建远程对象"></a>1.创建远程对象</h3><p>创建远程对象这一块是不存在漏洞的。<br><img src="/posts/fe391cb8/20251220192101859.png" alt="image.png"><br>远程对象的创建点在这里，我们在这边打个断点开始调试</p>
+<p><img src="/posts/fe391cb8/20251220192517359.png" alt="image.png"><br>到这边是对远程对象进行一个发布</p>
+<h4 id="发布远程对象"><a href="#发布远程对象" class="headerlink" title="发布远程对象"></a>发布远程对象</h4><p>这里我们主要研究的是如何将远程对象发布到网络上<br>首先RemoteOBJ这个类继承UnicastRemoteObject这个类，所以这边会到父类的构造函数</p>
+<p><img src="/posts/fe391cb8/20251220193427744.png" alt="image.png"><br>然后会先到第一个点的位置，这里传的参数是0，所以继续向下运行，会将0赋值给port也就是第二点的位置，这里port为0也就相当于我们这里发布的远程服务会随机调用一个端口。<br><code>注意点：这里的端口为远程对象的端口和1099没有关系，1099是注册中心开放的端口</code></p>
+<p><img src="/posts/fe391cb8/20251220193942539.png" alt="image.png"><br>这里的exportObject类，叫做发布对象/导出对象，从名字就可以看到这是一个发布远程对象的关键类，这也是上述远程对象类，可以不继承un那个类而直接可以手动调用exportObject这个类的原因。</p>
+<p><img src="/posts/fe391cb8/20251220194442303.png" alt="image.png"><br>这里第一个参数就是我们要实现逻辑的这样一个对象，第二个参数调用了Unicaji</p>
+<p><img src="/posts/fe391cb8/20251220194833170.png" alt="image.png"><br>继续跟进</p>
+<p><img src="/posts/fe391cb8/20251220195302518.png" alt="image.png"><br>我们可以看跟进看一这个方法调用了什么</p>
+<p><img src="/posts/fe391cb8/20251220195556010.png" alt="image.png"><br>方法返回一个TCPEndpoint, 看看它的构造函数，其实很明了，这个类就是处理网络请求的一个类。</p>
+<p><img src="/posts/fe391cb8/20251220200128472.png" alt="image.png"><br>然后我们回到LiveRef的构造方发中，可以看到endpoint（接口），也就是刚刚返回的TCPEndpoint，这里包含了端口和ip。</p>
+<p><img src="/posts/fe391cb8/20251220200608512.png" alt="image.png"><br>这里才是真正处理网络请求的东西，前面的几个类其实都是封装，这里重点标记一下这个类（LiveRef）</p>
+<p>然后就是在不同的类里调用exportObject<br><img src="/posts/fe391cb8/20251220201228036.png" alt="image.png"><br>这里会创建这个stub（客户端的一个代理），为什么stub这个代理会出现在这里呢？其实是服务端，在发布远程对象的时候创建了这个代理，并将这个代理放到了注册中心，然后客户端从操作中心拿，拿到后，通过这个stub调用服务端的一个代理，最后调用到远程对象。</p>
+<p><img src="/posts/fe391cb8/20251220201816478.png" alt="image.png"><br>跟到这里看如何创建这个代理的</p>
+<p><img src="/posts/fe391cb8/20251220202130559.png" alt="image.png"><br>这里封装了远程对象</p>
+<p><img src="/posts/fe391cb8/20251220202208828.png" alt="image.png"><br>到这边创建一个动态代理</p>
+<p><img src="/posts/fe391cb8/20251223111757718.png" alt="image.png"><br>我们接着走到Target，这是一个总的封装类</p>
+<p><img src="/posts/fe391cb8/20251223112646007.png" alt="image.png"><br>到这边我们可以看到，服务端的ref（处理网络请求的引用）和stub（客户端代理）的ref是同一个ref，也就是说，客户端和服务端要进行连接通信，用的是同一个东西。</p>
+<p><img src="/posts/fe391cb8/20251223113039827.png" alt="image.png"><br>同时，这里Target的id使用的也是LiveRef的id，所以核心就是LiveRef</p>
+<p><img src="/posts/fe391cb8/20251223113228641.png" alt="image.png"><br>封装完成之后，对封装的Target进行一个对象的发布，我们看一下它实现了什么逻辑</p>
+<p><img src="/posts/fe391cb8/20251223113837254.png" alt="image.png"></p>
+<p><img src="/posts/fe391cb8/20251223113900695.png"><br>这边调用了这个1051的TCPTransport，这边会正式的处理网络请求，listen会开启一个端口，跟进。</p>
+<p><img src="/posts/fe391cb8/20251223114209791.png" alt="image.png"><br>开启一个新的服务端的Socket服务，等待连接。</p>
+<p><img src="/posts/fe391cb8/20251223114446506.png" alt="image.png"><br>开启服务，等待连接之后的逻辑，应该是处理连接之后做什么，这边开启了新的线程来处理连接之后的逻辑<br><img src="/posts/fe391cb8/20251223114645918.png" alt="image.png"><br>注意点：这里开启了新的线程，说明网络请求的线程和代码的线程是独立的。</p>
+<p><img src="/posts/fe391cb8/20251223115118275.png" alt="image.png"><br>出了listen之后我们可以看到端口变成了65152，进行了一个端口的随机分配，这里可以往回看一下，具体的一个端口分配。</p>
+<p><img src="/posts/fe391cb8/20251223115243983.png" alt="image.png"><br>在创建一个新的Socket服务的时候，端口被分配了随机的值</p>
+<p><img src="/posts/fe391cb8/20251223115940759.png" alt="image.png"><br>实际上已经完成发布了，这里会进行一个记录，两个Table是两个map，target是我们刚刚讲的一个总的封装，这里使用put，把这样整个东西，存在系统的一个静态的表里（相当于日志记录）。<br>然后自此发布远程对象的调试就结束了。</p>
+<p>来一个小小的总结：<br>其实在分析过程中，虽然步入了很多方法，这些方法实现了各自的功能，但是如果从整体来看，整个的过程其实就是在使用exportObject方法，可以说整个调试的过程，是一个逐渐细化的一个过程，找到到底是哪里真正发布远程对象的一个过程。</p>
+<h3 id="2-创建注册中心"><a href="#2-创建注册中心" class="headerlink" title="2.创建注册中心"></a>2.创建注册中心</h3><h4 id="创建注册中心"><a href="#创建注册中心" class="headerlink" title="创建注册中心"></a>创建注册中心</h4><p><img src="/posts/fe391cb8/20251223121918293.png" alt="image.png"><br>创建注册中心，跟进后有一个安全检查，我们直接跳了。</p>
+<p><img src="/posts/fe391cb8/20251223122033507.png" alt="image.png"><br>跳过之后在进，然后向下调，我们可以来到这里，创建一个LiveRef，并且封装进UnicastServerRef，这里应该很熟悉和我们刚刚发布服务端相同的一个操作。</p>
+<p>我们可以回过头来看一下发布远程对象的操作，来巩固一下<br><img src="/posts/fe391cb8/20251223135416327.png" alt="image.png"><br><img src="/posts/fe391cb8/20251223135429620.png" alt="image.png"></p>
+<p>这里呢，和发布对象有一个明显的区别就是<br>发布远程对象时，这里传的一个参数是false<br><img src="/posts/fe391cb8/20251223140923856.png" alt="image.png"><br>但是，在创建注册中心时，这里却用了true<br><img src="/posts/fe391cb8/20251223141035451.png" alt="image.png"><br><img src="/posts/fe391cb8/20251223141428120.png" alt="image.png"><br>这里的参数名时permanent，中文意思是永久的，那么就很明显了，我们之前自定义的那个远程对象是临时的远程对象，而现在的这个远程对象是永久的远程对象，这是两者之间的差别。</p>
+<p>然后继续向下调就开始创建代理了，这里不同于发布远程对象的地方是，发布远程对象时，是没有stub的（使用动态代理），但是我们现在创建注册中心是有stub的（直接调用creatStub方法）<br><img src="/posts/fe391cb8/20251223142136986.png" alt="image.png"><br>看一下这里的判断，如果有返回true，如果没有返回false<br>至于在哪里呢？<br><img src="/posts/fe391cb8/20251223142616050.png" alt="image.png"><br>可以开全局搜索一下<br>所以这里是可以进入到creatstub这个方法的，（发布远程对象是没有进入到这个方法，调用了一个动态代理）<br><img src="/posts/fe391cb8/20251223143044848.png" alt="image.png"><br>creatStub这个方法向里存了一个ref，发布远程对象时也是一样存了ref<br>总结：其实就是创建Stub的方法不同，一个是使用动态代理，一个是使用creatStub方法。</p>
+<p><img src="/posts/fe391cb8/20251223143823783.png" alt="image.png"><br>然后会走到setSkeleton这个方法，Skeleton是服务端的一个代理。</p>
+<p><img src="/posts/fe391cb8/20251223143959812.png" alt="image.png"><br>进到这里，在啰嗦一遍哈，服务端与客户端要进行通信，两边都需要一个网络代理，客户端的代理叫做stub，而服务端的代理叫做skeleton。</p>
+<p><img src="/posts/fe391cb8/20251223144258019.png" alt="image.png"><br>和刚刚的stub一样是直接创建的，不是使用动态代理。这个skel是一个内部变量</p>
+<p><img src="/posts/fe391cb8/20251223144805566.png" alt="image.png"><br>到这里，impl中就会添加一个skel的这样一个变量</p>
+<p>在这之后就是全装到Target里，然后发布，记录，我们直接看最后都记录了什么<br><img src="/posts/fe391cb8/20251223150530371.png" alt="image.png"><br>所有创建好的远程对象都会放在objTable里面</p>
+<p><img src="/posts/fe391cb8/20251223150844888.png" alt="image.png"><br>这里有三个远程对象，为什么有三个，这里先放一下<br>我们先来看第二个<br><img src="/posts/fe391cb8/20251223150937654.png" alt="image.png"><br>先看DGC（分布式垃圾回收），这不是我们创建的，但是它有，是默认创建的。<br>在看第三个<br><img src="/posts/fe391cb8/20251223151131664.png" alt="image.png"><br>这个是我们之前创建的远程服务的一个远程对象（使用的动态代理）<br><img src="/posts/fe391cb8/20251223151310928.png" alt="image.png"><br>这里面是没有skel的<br><img src="/posts/fe391cb8/20251223151410067.png" alt="image.png"><br><img src="/posts/fe391cb8/20251223151423768.png" alt="image.png"><br>unicastServerRef和stub开启的端口也是一样的<br>然后我们看第一个<br><img src="/posts/fe391cb8/20251223151705074.png" alt="image.png"><br>这里肯定是有一个skel的，然后端口也都是1099，就不看了。</p>
+<h4 id="绑定的流程"><a href="#绑定的流程" class="headerlink" title="绑定的流程"></a>绑定的流程</h4><p><img src="/posts/fe391cb8/20251223152204152.png" alt="image.png"><br>检查是在本地绑定的<br><img src="/posts/fe391cb8/20251223152306009.png" alt="image.png"><br>其实就是一个hashtable，把远程对象put进去，name就是自己取的名字<br>服务端的整体过程：创建远程对象，创建注册中心，绑定。</p>
+<h3 id="3-客户端请求注册中心-客户端"><a href="#3-客户端请求注册中心-客户端" class="headerlink" title="3.客户端请求注册中心-客户端"></a>3.客户端请求注册中心-客户端</h3><p>客户端做的两件事：1.从注册中心获取远程对象的代理，2.通过远程代理对服务端进行远程调用<br><img src="/posts/fe391cb8/20251225144424512.png" alt="image.png"><br>在印象中可能会觉得获取远程对象是通过序列化和反序列化，但是实际上这里是进行了一个创建，然后注册中心只要给参数就可以了。然后就是创建了一个liveRef，封装了一下。</p>
+<p><img src="/posts/fe391cb8/20251225150326847.png" alt="image.png"><br>这里创建一个代理，然后继续向下调一下</p>
+<p><img src="/posts/fe391cb8/20251225150530959.png" alt="image.png"><br>调出来之后，我们看这里的liveRef，这里就获取了注册中心的stub对象。</p>
+<p>下一步就开始获取远程对象<br><img src="/posts/fe391cb8/20251225151019909.png" alt="image.png"><br>这里把名字给过去，然后去获取远程对象的代理。（在注册中心上）<br><img src="/posts/fe391cb8/20251225151636208.png" alt="image.png"><br>这边就走不到想要走的地方，也就是lookup方法上，调试不了（这里是版本有点bug），只能去看class文件了。<br><img src="/posts/fe391cb8/20251225152133022.png" alt="image.png"><br>创建一个连接</p>
+<p><img src="/posts/fe391cb8/20251225152246913.png" alt="image.png"><br>1的位置传入一个字符串（这个字符串就是我们查找的名称），2的位置将这个字符串序列化，客户端这边又一个序列化，那么到注册中心那里肯定就又一个反序列化了（待会会分析）。<br><img src="/posts/fe391cb8/20251225152618006.png" alt="image.png"><br>然后会调用到invoke（一个激活的方法），在invoke里会调用到executeCall方法<br><img src="/posts/fe391cb8/20251225152748253.png" alt="image.png"></p>
+<p><img src="/posts/fe391cb8/20251225152811495.png" alt="image.png"><br>他这个方法是客户端真正处理网络请求的方法。</p>
+<p>在接着还是回到之前的那个类里<br><img src="/posts/fe391cb8/20251225153043506.png" alt="image.png"><br>进行网络连接之后，这边获取到了返回值，然后进行了一个反序列化。这里的var23就是传回来的远程对象的动态代理。所以客户端想注册中心获取远程对象的代理是通过序列化和反序列化来实现的。这时，如果有一个恶意的注册中心，就可以使用这个点来对客户端进行攻击（这是第一个点）。</p>
+<p>来调一下executeCall这个方法。<br><img src="/posts/fe391cb8/20251225153904678.png" alt="image.png"><br>在这个函数里面有一个处理异常的方法，这里会进行一个反序列化。如果是一个异常类，这里会通过反序列化获取一个具体的信息。所以，如果注册中心返回了一个恶意的流，到客户端这里会被反序列化（第二点，这里更隐蔽，更容易被利用，因为所有的stub里，调用网络请求都会调用到这个方法）。也就是说这第二点中，如果RegistryImpl_Stub这个类里的方法被调用，然后这个方法又调用到了invoke，就有可能调用到readObject，从而被反序列化。<br>小总结：这里主要是客户端连接注册中心，首先，客户端拿stub对象，这里不是通过序列化和反序列化，而是通过客户端的创建，注册中心的传参完成，然后就是客户端获取服务端的远程对象，这里是通过序列化和反序列化进行完成的（漏洞点）。</p>
+<h3 id="4-客户端请求服务端-客户端"><a href="#4-客户端请求服务端-客户端" class="headerlink" title="4.客户端请求服务端-客户端"></a>4.客户端请求服务端-客户端</h3><p><img src="/posts/fe391cb8/20251225155406897.png" alt="image.png"><br>remoteOBJ是一个动态代理，动态代理无论你调用什么方法，都会走到你调用处理器的invoke方法<br><img src="/posts/fe391cb8/20251225155520979.png" alt="image.png"><br>走到这边。<br><img src="/posts/fe391cb8/20251225155623620.png" alt="image.png"><br>进入这个方法里，在去看invoke方法的逻辑<br><img src="/posts/fe391cb8/20251225155816069.png" alt="image.png"><br>调到这里，这里的marshalValue方法会序列化一个字符串<br><img src="/posts/fe391cb8/20251225160734098.png" alt="image.png"><br>这里实际上次就是这个参数<br><img src="/posts/fe391cb8/20251225160832891.png" alt="image.png"><br>然后这里又调用了executeCall方法，所有客户端的，如果要处理网络请求都要走这个方法。（一样，这里就有可能被攻击）（调用了jrmp协议进行攻击）<br><img src="/posts/fe391cb8/20251225161644293.png" alt="image.png"><br>到这边会判断有没有返回值然后调用unmarshalValue，这里我们是有返回值的调用到unmarshalValue，然后跟一下他<br><img src="/posts/fe391cb8/20251225165043839.png" alt="image.png"><br>服务端会传来一个序列化的值，客户端通过反序列化来获取。<br>小总结：还是有两个漏洞点，第一个是调用到了executeCall进行攻击，也就是使用jrmp协议进行攻击，第二个就是在服务端返回参数时进行的反序列化攻击。</p>
+<h3 id="5-客户端请求注册中心-注册中心"><a href="#5-客户端请求注册中心-注册中心" class="headerlink" title="5.客户端请求注册中心-注册中心"></a>5.客户端请求注册中心-注册中心</h3><p>要开始分析注册中心了，那么就要考虑怎么调试，怎么下断点呢，先回到刚开始给的图中<br><img src="/posts/fe391cb8/1766049177536-8b56d229-cf63-4537-ae9e-c5c47ad6e944.png"><br>我们刚才在对客户端的分析当中，使用的都是stub，而现在我们要操作服务端，所以要使用skel，skel是封装进target了，所以这边断点要下在target了。<br><img src="/posts/fe391cb8/20251225181553119.png" alt="image.png"><br>一步步细化找到target的位置，然后打下断电，从这里开始分析。<br>我们直接开服务端，然后客户端发送请求就断在我们要断的位置了。<br>在这里我们来看一下target里是什么<br><img src="/posts/fe391cb8/20251225182641420.png" alt="image.png"><br>首先是我们创建的stub，然后在disp里也有skel<br><img src="/posts/fe391cb8/20251225182732652.png" alt="image.png"><br>那么接下来我们就跟disp<br><img src="/posts/fe391cb8/20251225182854005.png" alt="image.png"><br>这边调用了dispatch方法<br><img src="/posts/fe391cb8/20251225182947490.png" alt="image.png"><br>到oldDispatch，还是跟着skel走<br><img src="/posts/fe391cb8/20251225183052971.png" alt="image.png"><br>调用了skel的dispatch方法，这里和客户端一样调试不了，所以只能静态的去看一下源码逻辑。<br>注意点：注册中心是一个特殊的服务端<br>进入skel的dispatch方法，我们可以看到有许多的case，不同的case值对应不同的方法<br>0-&gt;bind<br>1-&gt;list<br>2-&gt;lookup<br>3-&gt;rebind<br>4-&gt;unbind<br>这边我们调用的是case2，可以回过去看一下参数<br>然后这里<br><img src="/posts/fe391cb8/20251225184010343.png" alt="image.png"><br>会调用一个反序列化，我们在分析客户端的时候说到客户端会向注册中心传送一个序列化的对象（远程对象的名称）以此获取远程对象，那么注册中心这边的接受肯定就是一个反序列化喽。<br>从0-4的case值中如果有readObject方法的，都是可以被用来攻击的。</p>
+<p><img src="/posts/fe391cb8/20251225184413759.png" alt="image.png"><br><img src="/posts/fe391cb8/20251225184434169.png" alt="image.png"><br><img src="/posts/fe391cb8/20251225184443559.png" alt="image.png"><br><img src="/posts/fe391cb8/20251225184455108.png" alt="image.png"></p>
+<h3 id="6-客户端请求服务端-服务端"><a href="#6-客户端请求服务端-服务端" class="headerlink" title="6.客户端请求服务端-服务端"></a>6.客户端请求服务端-服务端</h3><p>还是接着上面的看去找发布远程对象时创建的target<br><img src="/posts/fe391cb8/20251225184923893.png" alt="image.png"><br>这时服务端创建的stub是一个动态代理<br><img src="/posts/fe391cb8/20251225185042448.png" alt="image.png"><br>依旧dispatch<br><img src="/posts/fe391cb8/20251225185132962.png" alt="image.png"><br>但是这里的skel是空的<br><img src="/posts/fe391cb8/20251225185212017.png" alt="image.png"><br>获取到输入流<br><img src="/posts/fe391cb8/20251225185247778.png" alt="image.png"><br>获取到了method，也就是我们要调用到的远程方法<br><img src="/posts/fe391cb8/20251225185348337.png" alt="image.png"><br><img src="/posts/fe391cb8/20251225185545372.png" alt="image.png"></p>
+<p>然后这里会调用到unmarshalValue，分析客户端的时候会将参数值序列化传入进去，所以服务端就会，反序列化来获取这个参数值<br><img src="/posts/fe391cb8/20251225185736624.png" alt="image.png"><br><img src="/posts/fe391cb8/20251225185815604.png" alt="image.png"><br>这里进行真正的远程调用<br><img src="/posts/fe391cb8/20251225185929124.png" alt="image.png"><br>这边是返回值的序列化，然后传到客户端进行反序列化。<br>小总结：客户端序列化参数传给服务端，服务端反序列化获得参数值。执行完结果之后，服务端序列化返回值传给客户端，客户端在反序列化获得返回值。客户端比服务端这里多了一个jrmp协议攻击。</p>
+<h3 id="DGC的stub"><a href="#DGC的stub" class="headerlink" title="DGC的stub"></a>DGC的stub</h3><p>DGC应该也很熟悉吧，这是前面提到的分布式垃圾回收。<br>所以我们先=现在要分析一下怎么创建出来<br><img src="/posts/fe391cb8/20251226153329156.png" alt="image.png"><br>实际上开始是从这里，这里的dgcLog是一个静态变量，当调用一个静态变量是会完成一个类的初始化。初始化的时候实际上会调用它的静态代码块。<br><img src="/posts/fe391cb8/20251226153635181.png" alt="image.png"><br>所以他就会走到这边。断在这里，我们重新调试一下。<br><img src="/posts/fe391cb8/20251226153857381.png" alt="image.png"><br>在向下调试就会进入这里，和之前创建注册中心的stub时是一样的<br><img src="/posts/fe391cb8/20251226154005480.png" alt="image.png"><br><img src="/posts/fe391cb8/20251226154100679.png" alt="image.png"><br>从这边就可以看到判断完成后进行一个实例化。<br><img src="/posts/fe391cb8/20251226154232644.png" alt="image.png"><br>DGC也会开启一个服务，注册中心是远程注册的服务，这里DGC是一个远程的回收的服务，他也开放了端口号，但是不像注册中心，他的端口号是随机的。<br><img src="/posts/fe391cb8/20251226154455579.png" alt="image.png"><br>最后就给put进表里<br>这就是DGC的创建过程，他的调用过程也是进入到dispatch方法，和服务端的类似，这里我们就不看了，我们主要分析一下，DGCImpl_Stub和DGCImpl_Skel<br>先看DGCImpl_stub他里面有clean和dirty两个方法一个弱的清除一个强的清除吧。<br><img src="/posts/fe391cb8/20251226155034744.png" alt="image.png"><br>我们会看到dirty方法里会调用到invoke方法<img src="/posts/fe391cb8/20251226155117050.png" alt="image.png"><br>clean中也有，这里就会被jrmp攻击<br><img src="/posts/fe391cb8/20251226155210646.png" alt="image.png"><br>这边也有一个反序列化的点，从服务端获取到一个东西，进行反序列化。<br>然后在看一下DGCImpl_skel<br>有两个case<br><img src="/posts/fe391cb8/20251226155421641.png" alt="image.png"></p>
+<p><img src="/posts/fe391cb8/20251226155433201.png" alt="image.png"><br>也都存在反序列化的点<br>小总结：DGC和注册中心差不多，它的客户端和服务端也都会被攻击。</p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>服务端创建远程对象，发布远程对象，并留下记录，在这个过程中服务端会创建stub。</li>
+<li>注册中心被创建(创建skel和stub)，并监听1099端口。</li>
+<li>服务端把第一步生成的Stub（远程对象），通过网络发给注册中心。注册中心通过自己的skel接受请求。（bind）</li>
+<li>客户端请求注册中心，在此期间会获得注册中心的stub（通过传参获得和反序列化无关），建立连接，并通过传入name（和序列化有关）获取远程对象，也就拿到服务端创建的stub。</li>
+<li>客户端利用这个远程对象和服务端建立通信，这时候客户端使用的是服务端创建的stub，服务端使用的是自己的skel进行连接。完成函数的调用。（仅个人理解）</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/fe391cb8/">https://lxu2n.github.io/posts/fe391cb8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/26798085/" title="Javacc"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Javacc</div></div><div class="info-2"><div class="info-item-1">前言靶场是从极核开的，https://hackhub.get-shell.com/ 分析一个登录系统，弱密码爆破一下 账号，密码分别是admin,admin123 看Cookie这里明显的反序列化字符串，rO0AB使用工具JavaGadgetGenerator进行cc链的测试设置好响应时间，我们来生成对应的链子，开始测试当我们测试到cc6的时候就有明显的延迟，我们在使用DNS测试一下有响应，这也确认了是cc6，同时也可以出网，那我们使用vshell来getshell启动vshell 1nohup ./v_linux_amd64 &gt; /dev/null 2&gt;&amp;1 &amp; 使用上线命令 上线成功 学了个vshell的使用，不赖 </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">39</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">11</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">2.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#RMI%E5%9F%BA%E7%A1%80"><span class="toc-number">3.</span> <span class="toc-text">RMI基础</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#RMI%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.1.</span> <span class="toc-text">RMI介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RMI%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.2.</span> <span class="toc-text">RMI的实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#server"><span class="toc-number">3.2.1.</span> <span class="toc-text">server</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#client"><span class="toc-number">3.2.2.</span> <span class="toc-text">client</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8Ewireshark%E5%88%86%E6%9E%90%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86"><span class="toc-number">3.3.</span> <span class="toc-text">从wireshark分析通信原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8E%E6%B3%A8%E5%86%8C%E8%A1%A8%E4%B9%8B%E9%97%B4%E7%9A%84%E4%BA%A4%E4%BA%92"><span class="toc-number">3.3.1.</span> <span class="toc-text">客户端与注册表之间的交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%8F%A6%E8%B5%B7%E4%B8%80%E4%B8%AA%E7%AB%AF%E5%8F%A3%E4%B8%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E4%BA%A4%E4%BA%92"><span class="toc-number">3.3.2.</span> <span class="toc-text">客户端另起一个端口与服务端的交互</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E7%9A%84%E4%BC%A0%E8%BE%93"><span class="toc-number">3.3.3.</span> <span class="toc-text">参数的传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.3.4.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%BB%A3%E7%A0%81%E6%96%B9%E9%9D%A2%E5%88%86%E6%9E%90%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86"><span class="toc-number">3.4.</span> <span class="toc-text">从代码方面分析通信原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA%E8%BF%9C%E7%A8%8B%E5%AF%B9%E8%B1%A1"><span class="toc-number">3.4.1.</span> <span class="toc-text">1.创建远程对象</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%91%E5%B8%83%E8%BF%9C%E7%A8%8B%E5%AF%B9%E8%B1%A1"><span class="toc-number">3.4.1.1.</span> <span class="toc-text">发布远程对象</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%88%9B%E5%BB%BA%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">3.4.2.</span> <span class="toc-text">2.创建注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">3.4.2.1.</span> <span class="toc-text">创建注册中心</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%91%E5%AE%9A%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">3.4.2.2.</span> <span class="toc-text">绑定的流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%B7%E6%B1%82%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">3.4.3.</span> <span class="toc-text">3.客户端请求注册中心-客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%B7%E6%B1%82%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">3.4.4.</span> <span class="toc-text">4.客户端请求服务端-客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%B7%E6%B1%82%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">3.4.5.</span> <span class="toc-text">5.客户端请求注册中心-注册中心</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AF%B7%E6%B1%82%E6%9C%8D%E5%8A%A1%E7%AB%AF-%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">3.4.6.</span> <span class="toc-text">6.客户端请求服务端-服务端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DGC%E7%9A%84stub"><span class="toc-number">3.4.7.</span> <span class="toc-text">DGC的stub</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">3.4.8.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/fe391cb8/" title="RMI_1">RMI_1</a><time datetime="2025-12-26T08:57:27.000Z" title="发表于 2025-12-26 16:57:27">2025-12-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/26798085/" title="Javacc">Javacc</a><time datetime="2025-12-25T06:32:59.000Z" title="发表于 2025-12-25 14:32:59">2025-12-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/a17ec151/" title="Cap">Cap</a><time datetime="2025-12-22T12:32:50.000Z" title="发表于 2025-12-22 20:32:50">2025-12-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/982d6246/" title="海洋cms">海洋cms</a><time datetime="2025-12-20T07:38:39.000Z" title="发表于 2025-12-20 15:38:39">2025-12-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/ab758827/" title="php原生类">php原生类</a><time datetime="2025-12-17T06:14:50.000Z" title="发表于 2025-12-17 14:14:50">2025-12-17</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
