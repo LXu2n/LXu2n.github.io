@@ -1,0 +1,304 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>java内存马_1 | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言还是打算先把内存马学一下，然后在学学java的代码审计，从tomcat架构开始学习。 java web三大件java web的三大件是Servlet、Filter、Listener。当tomcat接收到请求的时候，会依次经过Listener-》Filter-》Serlvet Servlet（执行者）Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 Web 浏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java内存马_1">
+<meta property="og:url" content="https://lxu2n.github.io/posts/6e2cfed1/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="前言还是打算先把内存马学一下，然后在学学java的代码审计，从tomcat架构开始学习。 java web三大件java web的三大件是Servlet、Filter、Listener。当tomcat接收到请求的时候，会依次经过Listener-》Filter-》Serlvet Servlet（执行者）Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 Web 浏">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2026-02-06T13:36:29.000Z">
+<meta property="article:modified_time" content="2026-02-06T13:39:00.096Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "java内存马_1",
+  "url": "https://lxu2n.github.io/posts/6e2cfed1/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2026-02-06T13:36:29.000Z",
+  "dateModified": "2026-02-06T13:39:00.096Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/6e2cfed1/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'java内存马_1',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.github.io/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">50</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">java内存马_1</span></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">java内存马_1</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-06T13:36:29.000Z" title="发表于 2026-02-06 21:36:29">2026-02-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-06T13:39:00.096Z" title="更新于 2026-02-06 21:39:00">2026-02-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java%E5%AE%89%E5%85%A8/">Java安全</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java%E5%AE%89%E5%85%A8/java%E5%86%85%E5%AD%98%E9%A9%AC/">java内存马</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>还是打算先把内存马学一下，然后在学学java的代码审计，从tomcat架构开始学习。</p>
+<h1 id="java-web三大件"><a href="#java-web三大件" class="headerlink" title="java web三大件"></a>java web三大件</h1><p>java web的三大件是Servlet、Filter、Listener。<br>当tomcat接收到请求的时候，会依次经过Listener-》Filter-》Serlvet</p>
+<h2 id="Servlet（执行者）"><a href="#Servlet（执行者）" class="headerlink" title="Servlet（执行者）"></a>Servlet（执行者）</h2><p>Java Servlet 是运行在 Web 服务器或应用服务器上的程序，它是作为来自 Web 浏览器或其他 HTTP 客户端的请求和 HTTP 服务器上的数据库或应用程序之间的中间层。<br>Servlet的架构如下图所示：<br><img src="/posts/6e2cfed1/20260206123836465.png" alt="image.png"><br>简单的聊一下它的作用: 处理具体的业务逻辑（处理客户端的请求）、读写数据库、返回HTML或json数据（响应）。</p>
+<h2 id="Servlet的三种创建方式"><a href="#Servlet的三种创建方式" class="headerlink" title="Servlet的三种创建方式"></a>Servlet的三种创建方式</h2><h3 id="第一种方法实现Servlet接口"><a href="#第一种方法实现Servlet接口" class="headerlink" title="第一种方法实现Servlet接口"></a>第一种方法实现Servlet接口</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.*;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;  </span><br><span class="line"><span class="keyword">import</span> java.io.IOException;  </span><br><span class="line">  </span><br><span class="line"><span class="meta">@WebServlet(urlPatterns = "/demo1")</span>  </span><br><span class="line"><span class="comment">//第一种方法实现Servlet接口  </span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Servletdemo1</span> <span class="keyword">implements</span> <span class="title class_">Servlet</span> {  </span><br><span class="line">    <span class="comment">//初始化，当Servlet第一次被创建的时候执行这个方法，这个方法在整个生命周期中只执行一次。  </span></span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">(ServletConfig servletConfig)</span> <span class="keyword">throws</span> ServletException {  </span><br><span class="line">        System.out.println(<span class="string">"Servlet Create"</span>);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">//Servlet获取初始化的配置信息  </span></span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> ServletConfig <span class="title function_">getServletConfig</span><span class="params">()</span> {  </span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;  </span><br><span class="line">    }  </span><br><span class="line">    <span class="comment">//对客户端响应的方法，每发送一次请求这个方法就会被执行一次  </span></span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">service</span><span class="params">(ServletRequest servletRequest, ServletResponse servletResponse)</span> <span class="keyword">throws</span> ServletException, IOException {  </span><br><span class="line">        System.out.println(<span class="string">"service run"</span>);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getServletInfo</span><span class="params">()</span> {  </span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>;  </span><br><span class="line">    }  </span><br><span class="line">    <span class="comment">//当Servlet被销毁时执行改方法  </span></span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">destroy</span><span class="params">()</span> {  </span><br><span class="line">  </span><br><span class="line">    }  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {  </span><br><span class="line">  </span><br><span class="line">    }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>看一下具体的实现。<br>访问demo01<br><img src="/posts/6e2cfed1/20260206133843557.png" alt="image.png"><br><img src="/posts/6e2cfed1/20260206133859215.png" alt="image.png"><br>看一下控制台的输出，没刷新一次run一次而Create只执行一次</p>
+<h3 id="第二种方法继承GenericServlet-类"><a href="#第二种方法继承GenericServlet-类" class="headerlink" title="第二种方法继承GenericServlet 类"></a>第二种方法继承GenericServlet 类</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.GenericServlet;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletRequest;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletResponse;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;  </span><br><span class="line"><span class="keyword">import</span> java.io.IOException;  </span><br><span class="line">  </span><br><span class="line"><span class="meta">@WebServlet(urlPatterns = "/demo2")</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Servletdemo2</span> <span class="keyword">extends</span> <span class="title class_">GenericServlet</span> {  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">service</span><span class="params">(ServletRequest servletRequest, ServletResponse servletResponse)</span> <span class="keyword">throws</span> ServletException, IOException {  </span><br><span class="line">        System.out.println(<span class="string">"Servletdemo2"</span>);  </span><br><span class="line">    }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/6e2cfed1/20260206134524418.png" alt="image.png"><br>这种方法比较少用</p>
+<h3 id="第三种方法继承HttpServlet"><a href="#第三种方法继承HttpServlet" class="headerlink" title="第三种方法继承HttpServlet"></a>第三种方法继承HttpServlet</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;  </span><br><span class="line"><span class="keyword">import</span> java.io.IOException;  </span><br><span class="line">  </span><br><span class="line"><span class="meta">@WebServlet(urlPatterns = "/demo3")</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Servletdemo3</span> <span class="keyword">extends</span> <span class="title class_">HttpServlet</span> {  </span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException {  </span><br><span class="line">        System.out.println(<span class="string">"Servletdemo3 GET"</span>);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doPost</span><span class="params">(HttpServletRequest req, HttpServletResponse resp)</span> <span class="keyword">throws</span> ServletException, IOException{  </span><br><span class="line">        System.out.println(<span class="string">"Servletdemo3 POST"</span>);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/6e2cfed1/20260206135904306.png" alt="image.png"><br>这种方法也是常用的创建Servlet的方法<br>doxxxx方法就是跟着我们具体的业务逻辑走的</p>
+<h2 id="Filter（守门员）"><a href="#Filter（守门员）" class="headerlink" title="Filter（守门员）"></a>Filter（守门员）</h2><p>Filter程序实现了特殊接口的Java类，与servlet类似，也是由servlet容器进行调用和执行的。<br>其主要功能是在HttpServletRequest到达Servlet之前，对其进行拦截和检查，也可以对HttpServletRequest的头和数据进行更改。也会在HttpServletResponse到达客户端之前，对其进行拦截和检查，当然也可以对他的头和数据进行更改。</p>
+<h3 id="Filter工作的基本原理"><a href="#Filter工作的基本原理" class="headerlink" title="Filter工作的基本原理"></a>Filter工作的基本原理</h3><ul>
+<li>1、Filter 程序是一个实现了特殊接口的 Java 类，与 Servlet 类似，也是由 Servlet 容器进行调用和执行的。</li>
+<li>2、当在 web.xml 注册了一个 Filter 来对某个 Servlet 程序进行拦截处理时，它可以决定是否将请求继续传递给 Servlet 程序，以及对请求和响应消息是否进行修改。</li>
+<li>3、当 Servlet 容器开始调用某个 Servlet 程序时，如果发现已经注册了一个 Filter 程序来对该 Servlet 进行拦截，那么容器不再直接调用 Servlet 的 service 方法，而是调用 Filter 的 doFilter 方法，再由 doFilter 方法决定是否去激活 service 方法。</li>
+<li>4、但在 Filter.doFilter 方法中不能直接调用 Servlet 的 service 方法，而是调用 FilterChain.doFilter 方法来激活目标 Servlet 的 service 方法，FilterChain 对象时通过 Filter.doFilter 方法的参数传递进来的。</li>
+<li>5、只要在 Filter.doFilter 方法中调用 FilterChain.doFilter 方法的语句前后增加某些程序代码，这样就可以在 Servlet 进行响应前后实现某些特殊功能。</li>
+<li>6、如果在 Filter.doFilter 方法中没有调用 FilterChain.doFilter 方法，则目标 Servlet 的 service 方法不会被执行，这样通过 Filter 就可以阻止某些非法的访问请求。<br>总结: Filter访问需要在web.xml里定义路径，然后一般的Fileter中是由一条filterchain组成的，也就是是由多个filter组成的，而service在最后一个Filter中执行。当然如果没有FilterChain的话最终就不会调用到service方法。可以看下图。<br><img src="/posts/6e2cfed1/20260206153125494.png" alt="image.png"><br>如果在Filter之前在添加一个filter，这个filter中有我们写的恶意代码，那么，当我们发送请求的时候，就会提前调用恶意的filter，导致命令的执行。</li>
+</ul>
+<h3 id="Filter的创建"><a href="#Filter的创建" class="headerlink" title="Filter的创建"></a>Filter的创建</h3><figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.servlet.*;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebFilter;  </span><br><span class="line"><span class="keyword">import</span> java.io.IOException;  </span><br><span class="line">  </span><br><span class="line"><span class="meta">@WebFilter(urlPatterns = "/demo4")</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Filterdemo</span> <span class="keyword">implements</span> <span class="title class_">Filter</span> {  </span><br><span class="line">    <span class="comment">//初始化  </span></span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">(FilterConfig filterConfig)</span> <span class="keyword">throws</span> ServletException {  </span><br><span class="line">        System.out.println(<span class="string">"init"</span>);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doFilter</span><span class="params">(ServletRequest request, ServletResponse response, FilterChain chain)</span> <span class="keyword">throws</span> IOException, ServletException {  </span><br><span class="line">        <span class="comment">//拦截  </span></span><br><span class="line">        System.out.println(<span class="string">"request go"</span>);  </span><br><span class="line">        <span class="comment">//放行，只有有它才能到Servlet  </span></span><br><span class="line">        chain.doFilter(request, response);  </span><br><span class="line">        System.out.println(<span class="string">"response go"</span>);  </span><br><span class="line">    }  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@Override</span>  </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">destroy</span><span class="params">()</span> { }  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/6e2cfed1/20260206154419991.png" alt="image.png"></p>
+<h2 id="Listener（观察者）"><a href="#Listener（观察者）" class="headerlink" title="Listener（观察者）"></a>Listener（观察者）</h2><p>Java Web 开发中的监听器（Listener）就是 Application、Session 和 Request 三大对象创建、销毁或者往其中添加、修改、删除属性时自动执行代码的功能组件。<br>这里介绍七个个listener，</p>
+<ul>
+<li><strong>ServletContextListener</strong>：用于监听 ServletContext 对象的创建和销毁事件，可以在 ServletContext 对象初始化时执行一些初始化代码，也可以在 ServletContext 对象销毁时执行一些清理代码。</li>
+<li><strong>ServletContextAttributeListener</strong>：用于监听 ServletContext 对象中属性的添加、删除和替换事件，可以在属性添加时执行一些逻辑处理，比如更新配置信息等；在属性删除时执行一些清理操作，比如释放资源等。</li>
+<li><strong>HttpSessionListener</strong>：用于监听 HttpSession 对象的创建和销毁事件，可以在 HttpSession 对象初始化时执行一些初始化代码，也可以在 HttpSession 对象销毁时执行一些清理代码。</li>
+<li><strong>HttpSessionAttributeListener</strong>：用于监听 HttpSession 对象中属性的添加、删除和替换事件，可以在属性添加时执行一些逻辑处理，比如更新用户信息等，在属性删除时执行一些清理操作，比如清空数据等。</li>
+<li><strong>HttpSessionActivationListener</strong>：用于监听 HttpSession 对象的钝化和活化事件，可以在 HttpSession 对象钝化时执行一些清理操作，比如将 Session 中的数据写入硬盘等，在 HttpSession 对象活化时执行一些初始化代码，比如重新读取数据等。</li>
+<li><strong>ServletRequestListener</strong>：用于监听 HttpServletRequest 对象的创建和销毁事件，可以在 HttpServletRequest 对象初始化时执行一些初始化代码，也可以在 HttpServletRequest 对象销毁时执行一些清理代码。</li>
+<li><strong>ServletRequestAttributeListener</strong>：用于监听 HttpServletRequest 对象中属性的添加、删除和替换事件，可以在属性添加时执行一些逻辑处理，比如更新请求参数等，在属性删除时执行一些清理操作，比如释放资源等。<br>主要作用就是监听</li>
+</ul>
+<h1 id="Tomcat"><a href="#Tomcat" class="headerlink" title="Tomcat"></a>Tomcat</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><img src="/posts/6e2cfed1/20260206204656675.png" alt="image.png"><br>这张图就是tomcat的工作原理</p>
+<h2 id="tomcat的构成"><a href="#tomcat的构成" class="headerlink" title="tomcat的构成"></a>tomcat的构成</h2><p>tomcat包括五大容器和一大连接器，五大容器是Service、Engine、Host、Context、Wrapper、Connector<br><img src="/posts/6e2cfed1/20260206205009097.png" alt="image.png"><br>上图就是tomcat中的几个组件，接下来我们详细的分析一下。</p>
+<h3 id="server组件"><a href="#server组件" class="headerlink" title="server组件"></a>server组件</h3><p>server组件在tomcat最外层，所以可以将server实例看成一个tomcat，server实例启动后，会立马对端口进行监听（默认端口是8005）。要注意的是一个server实例只能监听一个端口，这个组件的作用就是对全局进行管理。</p>
+<h3 id="service组件"><a href="#service组件" class="headerlink" title="service组件"></a>service组件</h3><p>service组件关联着Connector和Engine组件，它负责接受和处理客户端的请求，以及将这些请求传递给Engine组件进行进一步的处理。简单来说，Service组件是Tomcat中对外提供服务的核心组件。（也可以看上上图的红字部分，web服务器是不处理请求的）。</p>
+<h3 id="Engine组件"><a href="#Engine组件" class="headerlink" title="Engine组件"></a>Engine组件</h3><p>上个组件也提到了，Engine组件就是负责处理客户端的请求，并对这些请求分发到对应的Host和web应用程序（context）进行处理。</p>
+<h3 id="Host组件"><a href="#Host组件" class="headerlink" title="Host组件"></a>Host组件</h3><p>作用就是当Engine组件接收到来自Connector的请求之后，它会根据请求的主机头信息将请求分发到对应的Host组件。Host组件在进行进一步的处理请求，将其发送到正确的Context（web应用程序）进行处理</p>
+<h3 id="Context组件"><a href="#Context组件" class="headerlink" title="Context组件"></a>Context组件</h3><ol>
+<li><strong>管理Servlet实例</strong>：Context组件负责管理和维护Servlet实例的生命周期，包括Servlet的装载、初始化、执行和资源回收等。</li>
+<li><strong>提供Web应用环境</strong>：Context组件为Web应用提供了运行所需的环境和资源，包括ClassLoader、资源访问对象等。</li>
+<li><strong>处理HTTP请求</strong>：当Connector组件接收到HTTP请求后，会通过匹配请求URI的上下文路径来选择相应的Context来处理该请求。然后，Context会根据web.xml文件中定义的servlet映射来选择一个正确的Servlet来处理该请求。</li>
+</ol>
+<h3 id="wrapper组件"><a href="#wrapper组件" class="headerlink" title="wrapper组件"></a>wrapper组件</h3><p>wrapper组件直接包装了Servlet实例，每个Wrapper组件都对应着一个特定的Servlet，并负责该Servlet的加载、初始化、执行以及资源回收等生命周期管理。</p>
+<h3 id="Connector组件"><a href="#Connector组件" class="headerlink" title="Connector组件"></a>Connector组件</h3><p>主要负责客户端连接和客户端请求的处理加工。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>从一个客户端发送一个简单的请求过来，Connector接收到这个请求会把这个请求翻译成各个组件都能看懂得一个状态，然后回把这请求发送给engine组件，Engine组件对其进行简单得处理之后发送到host组件，host组件在对其进一步处理后发送给Context组件（web应用程序）进行处理，给出响应，大概就是这么一个过程。</p>
+<h2 id="Tomcat的类加载机制"><a href="#Tomcat的类加载机制" class="headerlink" title="Tomcat的类加载机制"></a>Tomcat的类加载机制</h2><p>在tomcat的类加载机制中，为了保证WebApp的隔离，独立。所以打破了双亲委派机制。每个webapp用一个独有的ClassLoader实例来加载。它首先尝试自己加载，找不到在去找父类，目的是优先加载web应用自己定义的类。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://drun1baby.top/2022/08/19/Java%E5%86%85%E5%AD%98%E9%A9%AC%E7%B3%BB%E5%88%97-01-%E5%9F%BA%E7%A1%80%E5%86%85%E5%AE%B9%E5%AD%A6%E4%B9%A0/">Java内存马系列-01-基础内容学习 | Drunkbaby’s Blog</a><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/7254792170162552892">Listener监听器什么是 Listener？ Listener ，监听器，是 Servlet 规范中一种组件，用于监 - 掘金</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/wang200536/article/details/142900833">Tomcat详细讲解(巨详细！！！)-CSDN博客</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/6e2cfed1/">https://lxu2n.github.io/posts/6e2cfed1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/6cdb73/" title="Log4j2"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Log4j2</div></div><div class="info-2"><div class="info-item-1">前言前几天做了一个log4j2的题目，但是还没有系统的学一下（关于开发，漏洞的原理，一些绕过方法等）。 简介Log4j2 是 Apache Log4j 的升级版本，相较于 Log4j 1.x 和 Logback，提供了显著的性能提升和功能改进。它被广泛认为是目前最优秀的 Java 日志框架之一，常与 SLF4J 门面结合使用以实现高效日志记录。 漏洞复现环境准备这里要先准备一个log4j2的环境  jdk8u65 log4j2 2.14.1 cc 3.2.1首先是依赖包12345678910111213141516&lt;dependency&gt;      &lt;groupId&gt;org.apache.logging.log4j&lt;/groupId&gt;      &lt;artifactId&gt;log4j-core&lt;/artifactId&gt;      &lt;version&gt;2.14.1&lt;/version&gt;  &lt;/dependency&gt;  &lt;dependency&gt;      &lt;groupId&gt;...</div></div></div></a></nav><hr class="custom-hr"><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">50</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java-web%E4%B8%89%E5%A4%A7%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">java web三大件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Servlet%EF%BC%88%E6%89%A7%E8%A1%8C%E8%80%85%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">Servlet（执行者）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Servlet%E7%9A%84%E4%B8%89%E7%A7%8D%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">Servlet的三种创建方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0Servlet%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.2.1.</span> <span class="toc-text">第一种方法实现Servlet接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E6%96%B9%E6%B3%95%E7%BB%A7%E6%89%BFGenericServlet-%E7%B1%BB"><span class="toc-number">2.2.2.</span> <span class="toc-text">第二种方法继承GenericServlet 类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95%E7%BB%A7%E6%89%BFHttpServlet"><span class="toc-number">2.2.3.</span> <span class="toc-text">第三种方法继承HttpServlet</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter%EF%BC%88%E5%AE%88%E9%97%A8%E5%91%98%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">Filter（守门员）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter%E5%B7%A5%E4%BD%9C%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">2.3.1.</span> <span class="toc-text">Filter工作的基本原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filter%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">2.3.2.</span> <span class="toc-text">Filter的创建</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Listener%EF%BC%88%E8%A7%82%E5%AF%9F%E8%80%85%EF%BC%89"><span class="toc-number">2.4.</span> <span class="toc-text">Listener（观察者）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Tomcat"><span class="toc-number">3.</span> <span class="toc-text">Tomcat</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">3.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tomcat%E7%9A%84%E6%9E%84%E6%88%90"><span class="toc-number">3.2.</span> <span class="toc-text">tomcat的构成</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#server%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.1.</span> <span class="toc-text">server组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#service%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.2.</span> <span class="toc-text">service组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Engine%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.3.</span> <span class="toc-text">Engine组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Host%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.4.</span> <span class="toc-text">Host组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Context%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.5.</span> <span class="toc-text">Context组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wrapper%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.6.</span> <span class="toc-text">wrapper组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Connector%E7%BB%84%E4%BB%B6"><span class="toc-number">3.2.7.</span> <span class="toc-text">Connector组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.2.8.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tomcat%E7%9A%84%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6"><span class="toc-number">3.3.</span> <span class="toc-text">Tomcat的类加载机制</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6e2cfed1/" title="java内存马_1">java内存马_1</a><time datetime="2026-02-06T13:36:29.000Z" title="发表于 2026-02-06 21:36:29">2026-02-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6cdb73/" title="Log4j2">Log4j2</a><time datetime="2026-02-04T12:50:56.000Z" title="发表于 2026-02-04 20:50:56">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/9d9cb0c9/" title="Ez_gadget">Ez_gadget</a><time datetime="2026-02-04T04:45:38.000Z" title="发表于 2026-02-04 12:45:38">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/ab4b97db/" title="fastjson4">fastjson4</a><time datetime="2026-01-31T15:01:06.000Z" title="发表于 2026-01-31 23:01:06">2026-01-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/32c2684d/" title="Springctf-1zLog">Springctf-1zLog</a><time datetime="2026-01-27T18:54:10.000Z" title="发表于 2026-01-28 02:54:10">2026-01-28</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 - 2026 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'LXu2n/LXu2n.github.io',
+      'data-repo-id': 'R_kgDOOuja2g',
+      'data-category-id': 'DIC_kwDOOuja2s4C020T',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
